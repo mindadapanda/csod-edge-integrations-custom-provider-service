@@ -1,103 +1,119 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using csod_edge_integrations_custom_provider_service.Models;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {
-    //used by the UI to manage users
-    //supports create, delete, and read of user/users
+    //used by the UI to manage users and the associated settings with a user
+    //this is your basic auth username/password -> setting controller
+    //to secure this controller Filters is strongly suggested
+    //like [Authorize]
     public class UserController : Controller
     {
         //using a temporary data store, ideally this should be a repository or unit of work, etc..
-        private IMemoryCache _cache;
-        private readonly string _usersKey = "users";
+        private readonly UserContext _userContext;
 
-        public UserController(IMemoryCache memoryCache)
+        public UserController(UserContext userContext)
         {
-            _cache = memoryCache;
+            _userContext = userContext;
         }
 
+        public IActionResult Index()
+        {
+            //seed db with at least 1 user
+            var user = new User();
+            user.Username = "csod-edge-user";
+            user.Password = "csodedgeisawesome";
+            user.Settings = new Settings();
+            return View();
+        }
+        
         [Route("api/users")]
         [HttpGet]
         public IActionResult GetAllUsers()
         {
-            HashSet<User> users = this.GetAllUsersFromCache();
+            var users = _userContext.Users.ToList();
 
             return Ok(users);
         }
 
-        [Route("api/user/{hashCode}")]
+        [Route("api/user/{id}")]
         [HttpGet]
-        public IActionResult GetUser(int hashCode)
+        public IActionResult GetUser(int id)
         {
-            var users = this.GetAllUsersFromCache();
-            foreach (var user in users)
+            var user = _userContext.Users.FirstOrDefault(x => x.Id == id);
+            if(user != null)
             {
-                if (user.HashCode == hashCode)
-                {
-                    return Ok(user);
-                }
+                return Ok(user);
             }
             return NotFound();
         }
 
-        [Route("api/user/{hashCode}")]
+        [Route("api/user")]
         [HttpPost]
-        public IActionResult CreateUser(int hashCode, [FromBody]User user)
+        public IActionResult CreateUser([FromBody]User user)
         {
-            if(string.IsNullOrWhiteSpace(user.Username)
-                || string.IsNullOrWhiteSpace(user.Password))
+            try
+            {
+                if (string.IsNullOrWhiteSpace(user.Username)
+                    || string.IsNullOrWhiteSpace(user.Password))
+                {
+                    return BadRequest();
+                }
+                if(user.Settings == null)
+                {
+                    user.Settings = new Settings();
+                }
+
+                //add the user
+                _userContext.Users.Add(user);
+                _userContext.SaveChanges();
+            }
+            catch(Exception e)
             {
                 return BadRequest();
             }
 
-            var users = this.GetAllUsersFromCache();
-            if (!users.Contains(user))
-            {
-                users.Add(user);
-            }
-            this.UpdateUsers(users);
             return Ok();
         }
 
-        [Route("api/user/{hashCode}")]
-        [HttpDelete]
-        public IActionResult DeleteUser(int hashCode)
+        [Route("api/user/{id}")]
+        [HttpPut]
+        public IActionResult UpdateUser(int id, [FromBody]User updatedUser)
         {
-            var users = this.GetAllUsersFromCache();
-            foreach(var user in users)
+            var user = _userContext.Users.FirstOrDefault(x => x.Id == id);
+            if(user != null)
             {
-                if(user.HashCode == hashCode)
-                {
-                    users.Remove(user);
-                    //also remove the associated settings as well
-                    this.UpdateUsers(users);
+                user.Username = updatedUser.Username;
+                user.Password = updatedUser.Password;
+                user.Settings = updatedUser.Settings;
 
-                    return Ok();
-                }
+                _userContext.Users.Update(user);
+                _userContext.SaveChanges();
+
+                return new NoContentResult();
             }
-            return NotFound();
+            else
+            {
+                return NotFound();
+            }
         }
 
-        private HashSet<User> GetAllUsersFromCache()
+        [Route("api/user/{id}")]
+        [HttpDelete]
+        public IActionResult DeleteUser(int id)
         {
-            var users = new HashSet<User>();
-            _cache.TryGetValue(_usersKey, out users);
+            var user = _userContext.Users.FirstOrDefault(x => x.Id == id);
+            if(user == null)
+            {
+                return NotFound();
+            }
 
-            return users;
-        }
+            _userContext.Users.Remove(user);
+            _userContext.SaveChanges();
 
-        private void UpdateUsers(HashSet<User> user)
-        {
-            //this is a potential bug where update users can be called and used by N number of users and some might run into collisions when setting the cache
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromDays(3));
-
-            _cache.Set(_usersKey, user, cacheEntryOptions);
+            return new NoContentResult();
         }
     }
 }

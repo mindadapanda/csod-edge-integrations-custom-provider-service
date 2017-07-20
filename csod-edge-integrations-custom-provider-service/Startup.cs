@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using csod_edge_integrations_custom_provider_service.Models;
 
 namespace csod_edge_integrations_custom_provider_service
 {
@@ -28,7 +26,7 @@ namespace csod_edge_integrations_custom_provider_service
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMemoryCache();
+            services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase());
             services.AddMvc();
         }
 
@@ -38,6 +36,7 @@ namespace csod_edge_integrations_custom_provider_service
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseStaticFiles();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
