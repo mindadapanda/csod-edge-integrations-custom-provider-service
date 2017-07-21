@@ -1,0 +1,15 @@
+﻿body {
+    margin-top: 20px;
+}
+
+#manage-users-header{
+    display:inline-block;
+}
+
+#create-user-button{
+    display: inline-block
+}
+
+#users-container{
+    margin-top: 20px;
+}

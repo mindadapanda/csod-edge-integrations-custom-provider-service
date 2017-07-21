@@ -6,8 +6,42 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\css\main.css" />
+    <Content Include="wwwroot\js\Router.js" />
+    <Content Include="wwwroot\js\users\ManageUser.js" />
+    <Content Include="wwwroot\js\users\ManageUsers.js" />
+    <Content Include="wwwroot\lib\semantic\semantic.css" />
+    <Content Include="wwwroot\lib\semantic\semantic.js" />
+    <Content Include="wwwroot\lib\semantic\semantic.min.css" />
+    <Content Include="wwwroot\lib\semantic\semantic.min.js" />
+    <Content Include="wwwroot\lib\semantic\themes\default\assets\fonts\icons.eot" />
+    <Content Include="wwwroot\lib\semantic\themes\default\assets\fonts\icons.otf" />
+    <Content Include="wwwroot\lib\semantic\themes\default\assets\fonts\icons.svg" />
+    <Content Include="wwwroot\lib\semantic\themes\default\assets\fonts\icons.ttf" />
+    <Content Include="wwwroot\lib\semantic\themes\default\assets\fonts\icons.woff" />
+    <Content Include="wwwroot\lib\semantic\themes\default\assets\fonts\icons.woff2" />
+    <Content Include="wwwroot\lib\semantic\themes\default\assets\images\flags.png" />
+    <Content Include="wwwroot\lib\vue-router\vue-router.common.js" />
+    <Content Include="wwwroot\lib\vue-router\vue-router.esm.js" />
+    <Content Include="wwwroot\lib\vue-router\vue-router.js" />
+    <Content Include="wwwroot\lib\vue-router\vue-router.min.js" />
+    <Content Include="wwwroot\lib\vue\vue.common.js" />
+    <Content Include="wwwroot\lib\vue\vue.esm.js" />
+    <Content Include="wwwroot\lib\vue\vue.js" />
+    <Content Include="wwwroot\lib\vue\vue.min.js" />
+    <Content Include="wwwroot\lib\vue\vue.runtime.common.js" />
+    <Content Include="wwwroot\lib\vue\vue.runtime.esm.js" />
+    <Content Include="wwwroot\lib\vue\vue.runtime.js" />
+    <Content Include="wwwroot\lib\vue\vue.runtime.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Views\User\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
@@ -16,7 +50,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="1.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="1.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
@@ -24,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
