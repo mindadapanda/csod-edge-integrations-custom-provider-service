@@ -3,4 +3,54 @@ this repo is a starter pack for integrating against custom type integrations in 
 
 To get started clone this repo and run it on your local dev machine or an instance in the cloud (aws, azure, google app engine, digital ocean, etc). This repo is built using ASPNET Core and therefore will be able to be run in any linux, windows, or mac environment. Please read up on aspnet core and get familiar with it.
 
-This repo is a baseline for getting started. It includes a rudimentary user page, which allows you to tie a username/password combo (basic auth request) to a class of settings. This repo also includes a few sample endpoints which will help you understand the consumption of this service. Lastly, this repo contains the concept of being an adapter which is essentially what this service serves to accomplish: being the middleware that talks to a vendor and integrates against a custom type integration as defined by Cornerstone Edge.
+This repo is a baseline for getting started. It includes a rudimentary user page, which allows you to tie a username/password combo (basic auth request) to a class of settings. This repo contains the concept of being an adapter which is essentially what this service serves to accomplish: being the middleware that talks to a vendor and integrates against a custom type integration as defined by Cornerstone Edge.
+
+# Quick Start
+Clone repo, and run. Either command line or you can use IISExpress. You will land on the Manage Users page, or navigate to it http://localhost:31515/user . This should be a good starting point and help you familiarize yourself with a User which has a username and password and the associated Settings that a user has. By default I added VendorUrl and VendorUserIdForUser as just some dummy settings to help you understand what would/should go into Settings.
+
+# Basics
+ASPNET MVC + WebAPI + Entity Framework Core + Sqlite
+
+UI is built using Vuejs 2 and Semantic UI CSS (just the css)
+
+wwwroot/ - contains all static files, css, js, this is where the frontend code lives
+
+Controllers/
+  UserController.cs - This is a WebAPI controller which contains all the necessary CRUD operations for a User
+
+Migrations/ - This folder contains all migrations. I have added an initial migration that matches the User and Settings model. If you update your Settings or User model you would need to run migrations. Look up EFCore and dotnet. Basically you're going to run, `dotnet ef migrations add MyMigrationName`, and then do, `dotnet ef database update`. You can also circumvent the process and manually add your own migration into the migrations folder and build/execute the project and migrations should kick in because of the Database.Migrations() call executed in UserContext.cs
+
+Models/
+  Settings.cs - This is the settings model that you will use to reflect a group of settings to the vendor. This can be anything from a unique ID that the vendor wants you to use every time you make a request or a URL that the vendor has specificed for you when making requests. The UI figures out the model of the settings, but currently does not support nested hierarchy, so I reccommend keeping everything flat. 99% of use cases is flat hierachry for settings.
+
+  User.cs - This is the user model.
+
+  UserContext.cs - This is the Entity Framework Core DbContext for user. Both users and settings db access are located here.
+
+Views/
+   User/
+    Index.cshtml - This is an entry point for the UI to launch
+
+Views/_Layout.cshtml - This is the shared layout used by Index
+
+appsettings.json - This is your appconfig file in JSON format
+ 
+  appsettings.Development.json - I would use this for development purposes only. If a Config setting you're trying to access isn't in here, dotnet will try to use the non-Development one. The order is if you're in DEV, Development settings superceed the non-Development one.
+
+Program.cs - entry point to start everything.
+
+Startup.cs - This is where you define what your app is using. This is also where you would do dependency injection as well as global configuration settings such as JSON Formatter Styling
+
+# Dev Guide
+## Sqlite 
+is currently used as the datastore for the models. For PRODUCTION the sqlite instance of Database.db should be where your application directory is. For DEVELOPMENT purposes it is located in `\bin\Debug\netcoreapp1.1\`. Note that this service currently uses netcoreapp1.1, of course if you use a different version it would be in a different folder.
+## Building your service
+This section is dedicated to helping you understand the flow of how an integration works. While each integration type might have different contracts, the logical flow is all the same.
+
+### simple flow
+>CSOD EDGE makes a request for some information or action => This service receives it and then makes a request out to the vendor => which sends back a response => which is then piped as a response back to CSOD EDGE
+
+### more detailed breakdown of the flow
+I am going to use Background Check as an example to help you understand the entire process and the separation of concerns from each domain
+>Sally is a recruiter. She is going to use Custom Background Check to run a background check on her potential employees. The first thing Sally does is look at a list of available background check packages.
+This is where the flow starts. When the user, Sally, requests a list of backgrround checks, CSOD Edge makes a call out to the service endpoint of packages which is implemented by this service against the contract as defined here https://app.swaggerhub.com/apis/mwangcsod/BackgroundCheck/1.0.0 . **Note that this is specifically for background checks, your integration type might differ**
