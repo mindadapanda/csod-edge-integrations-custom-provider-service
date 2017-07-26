@@ -11,7 +11,7 @@
                             <input type="text" placeholder="password" v-model="Password" />\
                         </div>\
                         <div class="ui fluid green button" v-on:click="login()">Login</div>\
-                        <div class="ui red label" v-show="showFailedLogin">Failed to Login! Username or Password is incorrect!</div>\
+                        <div class="ui basic red fluid label" v-show="showFailedLogin" id="failed-login-label">Failed to Login! Username or Password is incorrect!</div>\
                         <div class="ui horizontal divider">OR</div>\
                         <create-new-user v-show="showCreateNewUser"></create-new-user>\
                         <div class="ui fluid teal button" v-show="!showCreateNewUser" v-on:click="createNewUser()">Create New User</div>\
@@ -95,7 +95,6 @@
                     $.ajax({
                         contentType: "application/json",
                         type: "POST",
-                        dataType: "json",
                         data: JSON.stringify(
                             self.UserTemplate
                         ),

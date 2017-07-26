@@ -169,6 +169,63 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             return BadRequest();
         }
 
+        [Route("api/user/updatepassword")]
+        [HttpPost]
+        public IActionResult UpdateUserPassword([FromBody]UpdateUserPasswordRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Username)
+                || string.IsNullOrWhiteSpace(request.Password)
+                || string.IsNullOrWhiteSpace(request.UpdatedPassword))
+            {
+                return BadRequest();
+            }
+            var user = UserRepository.GetUserByCredentials(request.Username, request.Password);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+            //make sure to salt and hash the user password
+            user.Password = UserTool.GenerateSaltedHash(request.UpdatedPassword);
+            if (UserRepository.UpdateUser(user))
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [Route("api/user/updateoraddsettings")]
+        [HttpPost]
+        public IActionResult UpdateOrAddUserSettings([FromBody]UpdateOrAddUserSettingsRequest request)
+        {
+            if(string.IsNullOrWhiteSpace(request.Username)
+                || string.IsNullOrWhiteSpace(request.Password)
+                || request.Settings == null)
+            {
+                return BadRequest();
+            }
+            var user = UserRepository.GetUserByCredentials(request.Username, request.Password);
+            if(user == null)
+            {
+                return BadRequest();
+            }
+            var settings = SettingsRepository.GetSettingsUsingHashCode(user.HashCode);
+            if(settings == null)
+            {
+                request.Settings.UserHashCode = user.HashCode;
+                SettingsRepository.CreateSettings(request.Settings);
+
+                return Ok();
+            }
+            if(settings.Id != request.Settings.Id
+                || settings.UserHashCode != user.HashCode)
+            {
+                return BadRequest();
+            }
+            SettingsRepository.UpdateSettings(request.Settings);
+
+            return Ok();
+        }
+
         [Route("api/user/gettemplate")]
         [HttpGet]
         public IActionResult GetUserTemplate()
