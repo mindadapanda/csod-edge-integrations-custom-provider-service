@@ -13,3 +13,14 @@
 #users-container{
     margin-top: 20px;
 }
+
+#login-container{
+    max-width: 500px;
+    margin: 0 auto;
+    top: 200px;
+    padding: 50px 50px;
+}
+
+#manage-user-container{
+    margin-top: 80px;
+}

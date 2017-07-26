@@ -1,8 +1,7 @@
 ﻿var ManageUser = Vue.extend({
-    template: '<div class="ui container"> \
-            <div class="ui small blue button" v-on:click="backToManageUsers()"><i class="reply icon" />Back to Manage Users</div> \
+    template: '<div class="ui container" id="manage-user-container"> \
             <div class="ui raised green segment" > \
-                <div class="ui header">Manage {{ User.username }}</div> \
+                <div class="ui header">Manage User: {{ User.username }}</div> \
                 <div class="ui form"> \
                     <h4 class="ui dividing header">User Information</h4>\
                     <div class="two fields"> \
@@ -12,14 +11,10 @@
                         </div> \
                         <div class="field"> \
                             <label>Password</label> \
-                            <input type="text" placeholder="username" v-model="User.password" /> \
+                            <input type="password" placeholder="username" value="User.password" /> \
                         </div> \
                     </div > \
                     <h4 class="ui dividing header">User Settings</h4>\
-                    <div class="field" v-for="(value, key) in User.settings"> \
-                        <label v-if="keyIsNotId(key)">{{ key }}<label> \
-                        <input type="text" v-bind:placeholder="value" v-model="User.settings[key]" v-if="keyIsNotId(key)" /> \
-                    </div> \
                     <div class="ui green button" v-on:click="updateUser()">Update User</div> \
                     <div class="ui right floated red button" v-on:click="removeUser()">Remove User</div> \
                 </div>\
@@ -27,17 +22,16 @@
             </div>',
     data: function() {
         return {
-            User: {}
+            User: {},
+            Settings: {}
         }
     },
     created: function () {
         this.fetchData();
     },
     methods: {
-        backToManageUsers: function () {
-            router.push({
-                name:'manageusers'
-            })
+        getUsername: function () {
+            return this.User.username;
         },
         updateUser: function () {
             var self = this;
@@ -79,17 +73,37 @@
             return true;
         },
         fetchData: function () {
+            var userData = JSON.parse(sessionStorage.getItem('userCredentials'));
+            if (!userData
+                || !userData.username
+                || !userData.password) {
+                router.push({
+                    name: 'login'
+                });
+            }
             var self = this;
             $.ajax({
                 contentType: "application/json",
-                type: "GET",
+                type: "POST",
                 dataType: "json",
-                url: "./api/user/"+self.$route.params.id,
+                data: JSON.stringify(userData),
+                url: "./api/getuserandsettings/",
+                statusCode: {
+                    400: function () {
+                        //we got a bad request, redirect user to login page
+                        router.push({
+                            name: 'login'
+                        });
+                    }
+                },
                 success: function (data) {
-                    self.User = data
+                    self.User = data.user;
+                    self.Settings = data.settings;
                 },
                 error: function (data) {
-                    console.log("error");
+                    router.push({
+                        name: 'login'
+                    });
                 }
             });
         }

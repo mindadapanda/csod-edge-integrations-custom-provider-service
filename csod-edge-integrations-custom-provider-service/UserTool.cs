@@ -25,7 +25,7 @@ namespace csod_edge_integrations_custom_provider_service
             }
             for(int i = 0; i < saltInBytes.Length; i++)
             {
-                saltInBytes[passwordInBytes.Length + i] = saltInBytes[i];
+                plainTextWithSaltBytes[passwordInBytes.Length + i] = saltInBytes[i];
             }
 
             var saltedPasswordHash = algorithm.ComputeHash(plainTextWithSaltBytes);
@@ -46,7 +46,7 @@ namespace csod_edge_integrations_custom_provider_service
             }
             for(int i = 0; i < inputPassowrdInBytes.Length; i++)
             {
-                if(inputPassowrdInBytes[i] != inputPassowrdInBytes[i])
+                if(inputPassowrdInBytes[i] != passwordFromDbInBytes[i])
                 {
                     return false;
                 }

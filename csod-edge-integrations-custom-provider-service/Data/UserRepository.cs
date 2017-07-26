@@ -28,6 +28,18 @@ namespace csod_edge_integrations_custom_provider_service.Data
             return user;
         }
 
+        public User GetUserByUsername(string username)
+        {
+            var user = Repository.SingleOrDefault<User>(x => x.Username.Equals(username));
+            return user;
+        }
+
+        public User GetUserByCredentials(string username, string password)
+        {
+            var user = Repository.SingleOrDefault<User>(x => x.Username.Equals(username) && x.Password.Equals(password));
+            return user;
+        }
+
         public void CreateUser(User user)
         {
             //do not allow duplicate username and strings to be created

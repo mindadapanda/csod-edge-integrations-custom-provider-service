@@ -15,10 +15,12 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
     public class UserController : Controller
     {
         protected UserRepository UserRepository;
+        protected SettingsRepository SettingsRepository;
 
-        public UserController(UserRepository userRepository)
+        public UserController(UserRepository userRepository, SettingsRepository settingsRepository)
         {
             UserRepository = userRepository;
+            SettingsRepository = settingsRepository;
         }
 
         public IActionResult Index()
@@ -69,6 +71,12 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 {
                     return BadRequest();
                 }
+                //make username unqiue
+                var users = UserRepository.GetAll();
+                if(users.Any(x => x.Username.Equals(user.Username)))
+                {
+                    return BadRequest();
+                }
                 //make sure to salt and hash the user password
                 user.Password = UserTool.GenerateSaltedHash(user.Password);
 
@@ -114,6 +122,51 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         {
             UserRepository.DeleteUser(id);
             return new NoContentResult();
+        }
+
+        [Route("api/user/login")]
+        [HttpPost]
+        public IActionResult Login([FromBody]UserLoginRequest loginRequest)
+        {
+            if (string.IsNullOrWhiteSpace(loginRequest.Username)
+                || string.IsNullOrWhiteSpace(loginRequest.Password))
+            {
+                return BadRequest();
+            }
+            var user = UserRepository.GetUserByUsername(loginRequest.Username);
+            if(UserTool.DoPasswordsMatch(loginRequest.Password, user.Password))
+            {
+                return Ok(user);
+            }
+            return BadRequest();
+        }
+
+        [Route("api/getuserandsettings")]
+        [HttpPost]
+        public IActionResult GetUserUsingCredentials([FromBody]UserLoginRequest loginRequest)
+        {
+            if (string.IsNullOrWhiteSpace(loginRequest.Username)
+                || string.IsNullOrWhiteSpace(loginRequest.Password))
+            {
+                return BadRequest();
+            }
+            var user = UserRepository.GetUserByCredentials(loginRequest.Username, loginRequest.Password);
+            //let's go fetch the settings as well
+            if(user != null)
+            {
+                var settings = SettingsRepository.GetSettingsUsingHashCode(user.HashCode);
+                if(settings == null)
+                {
+                    settings = new Settings();
+                }
+
+                return Ok(new
+                {
+                    user = user,
+                    settings = settings
+                });
+            }
+            return BadRequest();
         }
 
         [Route("api/user/gettemplate")]

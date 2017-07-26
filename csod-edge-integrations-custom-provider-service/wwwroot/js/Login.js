@@ -1,74 +1,75 @@
-﻿//not used right now, uncomment in Router to use it, not guaranteed to work as some contracts have changed
-var ManageUsers = Vue.extend({
-    template:
-    '<div class="ui container" > \
-        <div class="ui large dividing header" id="manage-users-header">Manage Users</div> \
-        <div class="ui right floated small green button" id="create-user-button" v-on:click="toggleCreateNewUser()">{{ createNewUserText }}</div> \
-        <create-new-user v-show="isCreateUserActive"></create-new-user> \
-        <div class="ui container" id="users-container"> \
-            <div class="ui segments"> \
-                <div class="ui segment" v-for="user in Users"> \
-                    <div class="ui large label">user <div class="detail">{{user.username}}</div></div> \
-                    <div class="ui right floated blue button" v-on:click="manageUser(user.id)"> Manage User</div> \
-                </div> \
-            </div> \
-        </div> \
-    </div >',
+﻿var Login = Vue.extend({
+    template: '<div class="ui green raised segment" id="login-container" >\
+                    <div class="ui center aligned dividing header">Login</div>\
+                    <div class="ui form">\
+                        <div class="field">\
+                            <label>Username</label>\
+                            <input type="text" placeholder="username" v-model="Username" />\
+                        </div>\
+                        <div class="field">\
+                            <label>Password</label>\
+                            <input type="text" placeholder="password" v-model="Password" />\
+                        </div>\
+                        <div class="ui fluid green button" v-on:click="login()">Login</div>\
+                        <div class="ui red label" v-show="showFailedLogin">Failed to Login! Username or Password is incorrect!</div>\
+                        <div class="ui horizontal divider">OR</div>\
+                        <create-new-user v-show="showCreateNewUser"></create-new-user>\
+                        <div class="ui fluid teal button" v-show="!showCreateNewUser" v-on:click="createNewUser()">Create New User</div>\
+                    </div>\
+                </div>',
     data: function () {
         return {
-            Users: [],
-            SearchInput: '',
-            isCreateUserActive: false,
-            createNewUserText: 'Create User'
+            Username: '',
+            Password: '',
+            showCreateNewUser: false,
+            showFailedLogin: false
         }
     },
-    created: function () {
-        this.fetchData();
-    },
     methods: {
-        manageUser: function (userId) {
-            router.push({
-                name: 'manageuser',
-                params: {
-                    id: userId
-                }
-            })
+        createNewUser: function () {
+            this.showCreateNewUser = !this.showCreateNewUser;
         },
-        toggleCreateNewUser: function () {
-            if (this.isCreateUserActive) {
-                this.isCreateUserActive = false;
-                this.createNewUserText = 'Create user';
-            }
-            else {
-                this.isCreateUserActive = true;
-                this.createNewUserText = 'Close';
-            }
-        },
-        fetchData: function () {
+        login: function () {
             var self = this;
             $.ajax({
                 contentType: "application/json",
-                type: "GET",
+                type: "POST",
                 dataType: "json",
-                url: "./api/users",
+                data: JSON.stringify({
+                    username: self.Username,
+                    password: self.Password
+                }),
+                url: "./api/user/login",
+                statusCode: {
+                    400: function () {
+                        //we got a bad request, user login doesn't work
+                        self.showFailedLogin = true;
+                    }
+                },
                 success: function (data) {
-                    self.Users = data
+                    //store hashed username and password as part of local session storage
+                    var userData = JSON.stringify({
+                        username: data.username,
+                        password: data.password
+                    });
+                    sessionStorage.setItem('userCredentials', userData);
+                    router.push({
+                        name: 'manageuser'
+                    });
                 },
                 error: function (data) {
-                    console.log("error");
+                    self.showFailedLogin = true;
                 }
             });
         }
     },
     components: {
         'create-new-user': {
-            props: ['isActive'],
             template:
             '<div class="ui raised green segment" > \
                 <div class="ui header">Create New User</div> \
                 <div class="ui form"> \
                     <h4 class="ui dividing header">User Information</h4>\
-                    <div class="two fields"> \
                         <div class="field"> \
                             <label>Username</label> \
                             <input type="text" placeholder="username" v-model="UserTemplate.username" /> \
@@ -77,13 +78,7 @@ var ManageUsers = Vue.extend({
                             <label>Password</label> \
                             <input type="text" placeholder="username" v-model="UserTemplate.password" /> \
                         </div> \
-                    </div > \
-                    <h4 class="ui dividing header">User Settings</h4>\
-                    <div class="field" v-for="(value, key) in UserTemplate.settings"> \
-                        <label v-if="keyIsNotId(key)">{{ key }}<label> \
-                        <input type="text" v-bind:placeholder="value" v-model="UserTemplate.settings[key]" v-if="keyIsNotId(key)" /> \
-                    </div> \
-                    <div class="ui green button" v-on:click="addNewUser()"> Create</div> \
+                    <div class="ui fluid green button" v-on:click="addNewUser()"> Create</div> \
                 </div>\
             </div>',
             data: function () {
@@ -113,12 +108,6 @@ var ManageUsers = Vue.extend({
                         }
                     });
                 },
-                keyIsNotId: function (key) {
-                    if (key === "id" || key === "Id" || key === "ID") {
-                        return false;
-                    }
-                    return true;
-                },
                 fetchData: function () {
                     var self = this;
                     $.ajax({
@@ -138,4 +127,4 @@ var ManageUsers = Vue.extend({
         }
     }
 });
-Vue.component('manage-users', ManageUsers);
+Vue.component('login', Login);
