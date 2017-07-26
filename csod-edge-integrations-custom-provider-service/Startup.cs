@@ -8,6 +8,7 @@ using csod_edge_integrations_custom_provider_service.Models;
 using Microsoft.DotNet.PlatformAbstractions;
 using LiteDB;
 using csod_edge_integrations_custom_provider_service.Data;
+using csod_edge_integrations_custom_provider_service.Middleware;
 
 namespace csod_edge_integrations_custom_provider_service
 {
@@ -43,7 +44,10 @@ namespace csod_edge_integrations_custom_provider_service
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            
+            app.UseBasicAuthentication();
+            
+            
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {
