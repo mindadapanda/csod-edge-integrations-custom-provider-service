@@ -3,38 +3,36 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using csod_edge_integrations_custom_provider_service.Models;
 using Microsoft.EntityFrameworkCore;
+using LiteDB;
+using csod_edge_integrations_custom_provider_service.Data;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {
-    //used by the UI to manage users and the associated settings with a user
-    //this is your basic auth username/password -> setting controller
+    //used by the UI to manage users
     //to secure this controller Filters is strongly suggested
     //like [Authorize]
+    [Produces("application/json")]
     public class UserController : Controller
     {
-        //using a temporary data store, ideally this should be a repository or unit of work, etc..
-        private readonly UserContext _userContext;
-        //private IMemoryCache _cache;
-        //private readonly string _usersKey = "usersKey";
+        protected UserRepository UserRepository;
 
-        public UserController(UserContext userContext)
+        public UserController(UserRepository userRepository)
         {
-            _userContext = userContext;
+            UserRepository = userRepository;
         }
 
         public IActionResult Index()
         {
-            //seed db with at least 1 user
-            var user = new User();
-            user.Username = "edge-user";
-            user.Password = "csodedgeisawesome";
-            user.Settings = new Settings();
+            //seed db with the default admin user
+            //var user = new User();
+            //user.Username = "edge-user";
+            //user.Password = "csodedgeisawesome";
 
-            if (!_userContext.Users.Any(x => x.Username == user.Username && x.Password == user.Password))
-            {
-                _userContext.Add(user);
-                _userContext.SaveChanges();
-            }
+            //if (!_userContext.Users.Any(x => x.Username == user.Username && x.Password == user.Password))
+            //{
+            //    _userContext.Add(user);
+            //    _userContext.SaveChanges();
+            //}
 
             return View();
         }
@@ -43,7 +41,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         [HttpGet]
         public IActionResult GetAllUsers()
         {
-            var users = _userContext.Users.ToList();
+            var users = UserRepository.GetAll();
 
             return Ok(users);
         }
@@ -52,13 +50,9 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         [HttpGet]
         public IActionResult GetUser(int id)
         {
-            var user = _userContext.Users.Include(x => x.Settings).FirstOrDefault(x => x.Id == id);
+            var user = UserRepository.GetUser(id);
             if (user != null)
             {
-                if (user.Settings == null)
-                {
-                    user.Settings = new Settings();
-                }
                 return Ok(user);
             }
             return NotFound();
@@ -75,10 +69,10 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 {
                     return BadRequest();
                 }
+                //make sure to salt and hash the user password
+                user.Password = UserTool.GenerateSaltedHash(user.Password);
 
-                //add the user
-                _userContext.Users.Add(user);
-                _userContext.SaveChanges();
+                UserRepository.CreateUser(user);
             }
             catch
             {
@@ -92,53 +86,33 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         [HttpPut]
         public IActionResult UpdateUser(int id, [FromBody]User updatedUser)
         {
-            var user = _userContext.Users.Include(x => x.Settings).FirstOrDefault(x => x.Id == id);
-            if (user != null)
+            if(string.IsNullOrWhiteSpace(updatedUser.Username) 
+                || string.IsNullOrWhiteSpace(updatedUser.Password)
+                || id != updatedUser.Id)
             {
-                user.Username = updatedUser.Username;
-                user.Password = updatedUser.Password;
-                //user.Settings = updatedUser.Settings;
-
-                //doing this because foreign key relationships on EF doesn't work as expected
-                //user.Settings = updatedUser.Settings causes EF to think a new settings is created and thus will throw a tracking error
-                if(user.Settings != null)
-                {
-                    //manually updating the values :(
-                    var setting = _userContext.Settings.FirstOrDefault(x => x.Id == updatedUser.Settings.Id);
-                    setting.VendorUrl = updatedUser.Settings.VendorUrl;
-                    setting.VendorUserIdForUser = updatedUser.Settings.VendorUserIdForUser;
-
-                    _userContext.Settings.Update(setting);
-                }
-                else
-                {
-                    user.Settings = updatedUser.Settings;
-                }
-                
-                _userContext.Users.Update(user);
-                _userContext.SaveChanges();
-
-                return new NoContentResult();
+                return BadRequest();
             }
-            else
+            var user = UserRepository.GetUser(id);
+            if(user == null)
             {
-                return NotFound();
+                return BadRequest();
             }
+            //make sure they don't update the username
+            if(!user.Username.Equals(updatedUser.Username))
+            {
+                return BadRequest();
+            }
+            //make sure to salt and hash the user password
+            updatedUser.Password = UserTool.GenerateSaltedHash(updatedUser.Password);
+            UserRepository.UpdateUser(updatedUser);
+            return new NoContentResult();
         }
 
         [Route("api/user/{id}")]
         [HttpDelete]
         public IActionResult DeleteUser(int id)
         {
-            var user = _userContext.Users.Include(x=> x.Settings).FirstOrDefault(x => x.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _userContext.Users.Remove(user);
-            _userContext.SaveChanges();
-
+            UserRepository.DeleteUser(id);
             return new NoContentResult();
         }
 
@@ -147,8 +121,6 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         public IActionResult GetUserTemplate()
         {
             var user = new User();
-            user.Settings = new Settings();
-
             return Ok(user);
         }
     }
