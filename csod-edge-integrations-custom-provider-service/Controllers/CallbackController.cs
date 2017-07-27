@@ -48,14 +48,6 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             return BadRequest("Cannot find callback data to process.");
         }
 
-        [Route("api/callback/generate")]
-        [HttpGet]
-        public IActionResult GenerateCallback()
-        {
-            var callbackUrl = this.GenerateCallback("http://www.google.com", 1);
-            return Ok(callbackUrl);
-        }
-
         private string GenerateCallback(string edgeCallbackUrl, int callbackLimit = 10)
         {
             var request = HttpContext.Request;
