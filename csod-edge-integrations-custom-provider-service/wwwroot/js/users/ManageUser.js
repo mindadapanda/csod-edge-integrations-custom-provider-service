@@ -1,82 +1,145 @@
 ﻿var ManageUser = Vue.extend({
-    template: '<div class="ui container" id="manage-user-container"> \
-            <div class="ui raised green segment" > \
-                <div class="ui header">Manage User: {{ User.username }}</div> \
-                <div class="ui form"> \
+    template: '<div class="ui container" id="manage-user-container">\
+            <div class="ui raised green segment">\
+                <div class="ui header">Manage User: {{ User.username }}</div>\
+                <div class="ui form warning">\
                     <h4 class="ui dividing header">User Information</h4>\
-                    <div class="two fields"> \
-                        <div class="field"> \
-                            <label>Username</label> \
-                            <input type="text" placeholder="username" v-model="User.username" /> \
-                        </div> \
-                        <div class="field"> \
-                            <label>Password</label> \
-                            <input type="password" placeholder="username" value="User.password" /> \
-                        </div> \
-                    </div > \
+                    <div class="ui warning message"><div class="header">If you change the password, you will be required to re- login using the new password.</div></div>\
+                    <div class="two fields">\
+                        <div class="disabled field">\
+                            <label>Username</label>\
+                            <input type="text" placeholder="username" v-model="User.username" />\
+                        </div>\
+                        <div class="field">\
+                            <label>Password</label>\
+                            <input v-show="showPasswordInput" type="password" placeholder="username" v-model="User.password" />\
+                            <div class="ui small right floated button" v-on:click="changePassword($event)" id="change-password-button">Change Password</div>\
+                        </div>\
+                    </div>\
                     <h4 class="ui dividing header">User Settings</h4>\
-                    <div class="ui green button" v-on:click="updateUser()">Update User</div> \
-                    <div class="ui right floated red button" v-on:click="removeUser()">Remove User</div> \
+                    <div class="field" v-for="(value, key) in Settings">\
+                        <label v-if="keyIsNotId(key)">{{ key }}</label>\
+                        <input v-if="keyIsNotId(key)" type="text" v-bind:placeholder="key" v-model="Settings[key]" />\
+                    </div>\
+                    <div class="ui green fluid button" v-on:click="updateUserSettings()">Update User Settings</div>\
                 </div>\
             </div>\
             </div>',
     data: function() {
         return {
             User: {},
-            Settings: {}
+            Settings: {},
+            showPasswordInput: false,
+            UserData: JSON.parse(sessionStorage.getItem('userCredentials'))
         }
     },
     created: function () {
         this.fetchData();
     },
     methods: {
-        getUsername: function () {
-            return this.User.username;
+        changePassword: function (event) {
+            if (this.showPasswordInput) {
+                //if password input is already shown and this button is triggered again we should go and update the password
+                var self = this;
+                $.ajax({
+                    contentType: "application/json",
+                    type: "POST",
+                    data: JSON.stringify({
+                        username: self.UserData.username,
+                        password: self.UserData.password,
+                        updatedPassword: self.User.password
+                    }),
+                    url: "./api/user/updatepassword",
+                    statusCode: {
+                        400: function () {
+                            alert('bad request, password not updated');
+                        }
+                    },
+                    success: function (data) {
+                        sessionStorage.clear();
+                        router.push({
+                            name: 'login'
+                        });
+                    },
+                    error: function (data) {
+                        alert('bad request, password not updated');
+                    }
+                });
+            }
+            else {
+                var button = $(event.currentTarget);
+                button.text('Update Password');
+                button.addClass('yellow');
+                this.showPasswordInput = true;
+            }
         },
-        updateUser: function () {
+        updateUserSettings: function () {
             var self = this;
             $.ajax({
                 contentType: "application/json",
-                type: "PUT",
-                dataType: "json",
-                data: JSON.stringify(
-                    self.User
-                ),
-                url: "./api/user/"+self.User.id,
+                type: "POST",
+                data: JSON.stringify({
+                    username: self.UserData.username,
+                    password: self.UserData.password,
+                    settings: self.Settings
+                }),
+                url: "./api/user/updateoraddsettings",
+                statusCode: {
+                    400: function () {
+                        alert('bad request');
+                    }
+                },
                 success: function (data) {
                     location.reload();
                 },
                 error: function (data) {
-                    location.reload();
+                    alert('bad request');
                 }
             });
         },
-        removeUser: function () {
-            var self = this;
-            $.ajax({
-                contentType: "application/json",
-                type: "DELETE",
-                dataType: "json",
-                url: "./api/user/"+self.User.id,
-                success: function (data) {
-                    self.backToManageUsers();
-                },
-                error: function (data) {
-                    self.backToManageUsers();
-                }
-            });
-        },
+        //updateUser: function () {
+        //    var self = this;
+        //    $.ajax({
+        //        contentType: "application/json",
+        //        type: "PUT",
+        //        dataType: "json",
+        //        data: JSON.stringify(
+        //            self.User
+        //        ),
+        //        url: "./api/user/"+self.User.id,
+        //        success: function (data) {
+        //            location.reload();
+        //        },
+        //        error: function (data) {
+        //            location.reload();
+        //        }
+        //    });
+        //},
+        //removeUser: function () {
+        //    var self = this;
+        //    $.ajax({
+        //        contentType: "application/json",
+        //        type: "DELETE",
+        //        dataType: "json",
+        //        url: "./api/user/"+self.User.id,
+        //        success: function (data) {
+        //            self.backToManageUsers();
+        //        },
+        //        error: function (data) {
+        //            self.backToManageUsers();
+        //        }
+        //    });
+        //},
         keyIsNotId: function (key) {
-            if (key === "id" || key === "Id" || key === "ID" || key === "userId") {
+            if (key === "id" || key === "Id" || key === "ID" || key === "userId" || key === "userHashCode") {
                 return false;
             }
             return true;
         },
         fetchData: function () {
-            var userData = JSON.parse(sessionStorage.getItem('userCredentials'));
-            if (!userData
-                || !userData.username
-                || !userData.password) {
+            if (!this.UserData
+                || !this.UserData.username
+                || !this.UserData.password) {
                 router.push({
                     name: 'login'
                 });
@@ -86,7 +149,7 @@
                 contentType: "application/json",
                 type: "POST",
                 dataType: "json",
-                data: JSON.stringify(userData),
+                data: JSON.stringify(self.UserData),
                 url: "./api/getuserandsettings/",
                 statusCode: {
                     400: function () {
