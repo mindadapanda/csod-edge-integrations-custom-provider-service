@@ -1,4 +1,5 @@
-﻿var ManageUsers = Vue.extend({
+﻿//not used right now, uncomment in Router to use it, not guaranteed to work as some contracts have changed
+var ManageUsers = Vue.extend({
     template:
     '<div class="ui container" > \
         <div class="ui large dividing header" id="manage-users-header">Manage Users</div> \

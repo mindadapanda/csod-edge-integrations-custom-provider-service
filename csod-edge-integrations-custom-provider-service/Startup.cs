@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using csod_edge_integrations_custom_provider_service.Models;
 using Microsoft.DotNet.PlatformAbstractions;
+using LiteDB;
+using csod_edge_integrations_custom_provider_service.Data;
+using csod_edge_integrations_custom_provider_service.Middleware;
 
 namespace csod_edge_integrations_custom_provider_service
 {
@@ -28,10 +31,13 @@ namespace csod_edge_integrations_custom_provider_service
         {
             // Add framework services.
             //services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase());
-            //do this because relative  path is not working
-            services.AddDbContext<UserContext>(opt => opt.UseSqlite($"Data Source={ApplicationEnvironment.ApplicationBasePath}\\{Configuration.GetConnectionString("SqliteDev")}"));
             services.AddMemoryCache();
             services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            //do this because relative  path is not working
+            services.AddSingleton(x => new LiteRepository($"{ApplicationEnvironment.ApplicationBasePath}\\{Configuration.GetConnectionString("LiteDbDev")}"));
+            services.AddSingleton<UserRepository>();
+            services.AddSingleton<SettingsRepository>();
+            services.AddSingleton<CallbackRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,7 +45,10 @@ namespace csod_edge_integrations_custom_provider_service
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            
+            app.UseBasicAuthentication();
+            
+            
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {

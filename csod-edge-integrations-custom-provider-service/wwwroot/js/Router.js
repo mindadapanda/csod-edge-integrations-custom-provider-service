@@ -1,8 +1,8 @@
 ﻿var router = new VueRouter({
     routes: [
-        { path: '/', component: ManageUsers },
-        { path: '/manage', name: 'manageusers', component: ManageUsers },
-        { path: '/manageuser/:id', name: 'manageuser', component: ManageUser }
+        { path: '/', name: 'login', component: Login },
+        //{ path: '/manage', name: 'manageusers', component: ManageUsers },
+        { path: '/manageuser', name: 'manageuser', component: ManageUser }
     ]
 });
 var app = new Vue({
