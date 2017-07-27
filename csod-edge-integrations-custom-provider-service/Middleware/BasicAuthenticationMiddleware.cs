@@ -1,4 +1,5 @@
-﻿using csod_edge_integrations_custom_provider_service.Models;
+﻿using csod_edge_integrations_custom_provider_service.Data;
+using csod_edge_integrations_custom_provider_service.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -14,18 +15,21 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
 {
     public class BasicAuthenticationMiddleware : AuthenticationMiddleware<BasicAuthenticationOptions>
     {
+        readonly UserRepository _userRepository;
         public BasicAuthenticationMiddleware(
            RequestDelegate next,
            IOptions<BasicAuthenticationOptions> options,
            ILoggerFactory loggerFactory,
-           UrlEncoder encoder)
+           UrlEncoder encoder,
+           UserRepository userRepository)
            : base(next, options, loggerFactory, encoder)
-        {            
+        {
+            _userRepository = userRepository;
         }
 
         protected override AuthenticationHandler<BasicAuthenticationOptions> CreateHandler()
         {
-            return new BasicAuthenticationHandler();
+            return new BasicAuthenticationHandler(_userRepository);
         }
     }
 }
