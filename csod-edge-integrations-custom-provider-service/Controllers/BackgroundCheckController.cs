@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using csod_edge_integrations_custom_provider_service.Models.BackgroundCheck;
+using csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCheck;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {

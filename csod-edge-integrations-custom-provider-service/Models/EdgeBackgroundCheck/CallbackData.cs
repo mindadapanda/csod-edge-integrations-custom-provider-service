@@ -30,7 +30,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
+namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCheck
 {
     /// <summary>
     /// callback data includes the callback URL to use as well as the required callback data marked as required

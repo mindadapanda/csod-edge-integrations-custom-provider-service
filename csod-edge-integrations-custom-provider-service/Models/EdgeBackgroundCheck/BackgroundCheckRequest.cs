@@ -30,55 +30,62 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
+namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCheck
 {
     /// <summary>
     /// 
     /// </summary>
     [DataContract]
-    public partial class BackgroundCheckPackage :  IEquatable<BackgroundCheckPackage>
+    public partial class BackgroundCheckRequest :  IEquatable<BackgroundCheckRequest>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BackgroundCheckPackage" /> class.
+        /// Initializes a new instance of the <see cref="BackgroundCheckRequest" /> class.
         /// </summary>
-        /// <param name="Id">unique identifier (required).</param>
-        /// <param name="Name">friendly name of package (required).</param>
-        public BackgroundCheckPackage(string Id = null, string Name = null)
+        /// <param name="ApplicantData">ApplicantData (required).</param>
+        /// <param name="CallbackData">CallbackData (required).</param>
+        /// <param name="SelectedPackageId">unique id that corresponds to the Id provided by the Get Pacakge Request.</param>
+        public BackgroundCheckRequest(ApplicantData ApplicantData = null, CallbackData CallbackData = null, string SelectedPackageId = null)
         {
-            // to ensure "Id" is required (not null)
-            if (Id == null)
+            // to ensure "ApplicantData" is required (not null)
+            if (ApplicantData == null)
             {
-                throw new InvalidDataException("Id is a required property for BackgroundCheckPackage and cannot be null");
+                throw new InvalidDataException("ApplicantData is a required property for BackgroundCheckRequest and cannot be null");
             }
             else
             {
-                this.Id = Id;
+                this.ApplicantData = ApplicantData;
             }
-            // to ensure "Name" is required (not null)
-            if (Name == null)
+            // to ensure "CallbackData" is required (not null)
+            if (CallbackData == null)
             {
-                throw new InvalidDataException("Name is a required property for BackgroundCheckPackage and cannot be null");
+                throw new InvalidDataException("CallbackData is a required property for BackgroundCheckRequest and cannot be null");
             }
             else
             {
-                this.Name = Name;
+                this.CallbackData = CallbackData;
             }
+            this.SelectedPackageId = SelectedPackageId;
             
         }
 
         /// <summary>
-        /// unique identifier
+        /// Gets or Sets ApplicantData
         /// </summary>
-        /// <value>unique identifier</value>
-        [DataMember(Name="id")]
-        public string Id { get; set; }
+        [DataMember(Name="applicantData")]
+        public ApplicantData ApplicantData { get; set; }
 
         /// <summary>
-        /// friendly name of package
+        /// Gets or Sets CallbackData
         /// </summary>
-        /// <value>friendly name of package</value>
-        [DataMember(Name="name")]
-        public string Name { get; set; }
+        [DataMember(Name="callbackData")]
+        public CallbackData CallbackData { get; set; }
+
+        /// <summary>
+        /// unique id that corresponds to the Id provided by the Get Pacakge Request
+        /// </summary>
+        /// <value>unique id that corresponds to the Id provided by the Get Pacakge Request</value>
+        [DataMember(Name="selectedPackageId")]
+        public string SelectedPackageId { get; set; }
 
 
         /// <summary>
@@ -88,9 +95,10 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class BackgroundCheckPackage {\n");
-            sb.Append("  Id: ").Append(Id).Append("\n");
-            sb.Append("  Name: ").Append(Name).Append("\n");
+            sb.Append("class BackgroundCheckRequest {\n");
+            sb.Append("  ApplicantData: ").Append(ApplicantData).Append("\n");
+            sb.Append("  CallbackData: ").Append(CallbackData).Append("\n");
+            sb.Append("  SelectedPackageId: ").Append(SelectedPackageId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -114,15 +122,15 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((BackgroundCheckPackage)obj);
+            return Equals((BackgroundCheckRequest)obj);
         }
 
         /// <summary>
-        /// Returns true if BackgroundCheckPackage instances are equal
+        /// Returns true if BackgroundCheckRequest instances are equal
         /// </summary>
-        /// <param name="other">Instance of BackgroundCheckPackage to be compared</param>
+        /// <param name="other">Instance of BackgroundCheckRequest to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(BackgroundCheckPackage other)
+        public bool Equals(BackgroundCheckRequest other)
         {
 
             if (ReferenceEquals(null, other)) return false;
@@ -130,14 +138,19 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
 
             return 
                 (
-                    this.Id == other.Id ||
-                    this.Id != null &&
-                    this.Id.Equals(other.Id)
+                    this.ApplicantData == other.ApplicantData ||
+                    this.ApplicantData != null &&
+                    this.ApplicantData.Equals(other.ApplicantData)
                 ) && 
                 (
-                    this.Name == other.Name ||
-                    this.Name != null &&
-                    this.Name.Equals(other.Name)
+                    this.CallbackData == other.CallbackData ||
+                    this.CallbackData != null &&
+                    this.CallbackData.Equals(other.CallbackData)
+                ) && 
+                (
+                    this.SelectedPackageId == other.SelectedPackageId ||
+                    this.SelectedPackageId != null &&
+                    this.SelectedPackageId.Equals(other.SelectedPackageId)
                 );
         }
 
@@ -152,22 +165,24 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
             {
                 int hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.Id != null)
-                    hash = hash * 59 + this.Id.GetHashCode();
-                if (this.Name != null)
-                    hash = hash * 59 + this.Name.GetHashCode();
+                if (this.ApplicantData != null)
+                    hash = hash * 59 + this.ApplicantData.GetHashCode();
+                if (this.CallbackData != null)
+                    hash = hash * 59 + this.CallbackData.GetHashCode();
+                if (this.SelectedPackageId != null)
+                    hash = hash * 59 + this.SelectedPackageId.GetHashCode();
                 return hash;
             }
         }
 
         #region Operators
 
-        public static bool operator ==(BackgroundCheckPackage left, BackgroundCheckPackage right)
+        public static bool operator ==(BackgroundCheckRequest left, BackgroundCheckRequest right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(BackgroundCheckPackage left, BackgroundCheckPackage right)
+        public static bool operator !=(BackgroundCheckRequest left, BackgroundCheckRequest right)
         {
             return !Equals(left, right);
         }

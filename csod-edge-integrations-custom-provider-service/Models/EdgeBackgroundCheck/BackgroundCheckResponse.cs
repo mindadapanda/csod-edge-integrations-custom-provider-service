@@ -30,45 +30,45 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
+namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCheck
 {
     /// <summary>
     /// 
     /// </summary>
     [DataContract]
-    public partial class ApplicantDataResume :  IEquatable<ApplicantDataResume>
+    public partial class BackgroundCheckResponse :  IEquatable<BackgroundCheckResponse>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicantDataResume" /> class.
+        /// Initializes a new instance of the <see cref="BackgroundCheckResponse" /> class.
         /// </summary>
-        /// <param name="ProfessionalExperiences">ProfessionalExperiences.</param>
-        /// <param name="Educations">Educations.</param>
-        /// <param name="Certifications">Certifications.</param>
-        public ApplicantDataResume(List<ProfessionalExperience> ProfessionalExperiences = null, List<Education> Educations = null, List<Certification> Certifications = null)
+        /// <param name="HasErrors">HasErrors (required).</param>
+        /// <param name="Errors">Errors.</param>
+        public BackgroundCheckResponse(bool? HasErrors = null, List<Error> Errors = null)
         {
-            this.ProfessionalExperiences = ProfessionalExperiences;
-            this.Educations = Educations;
-            this.Certifications = Certifications;
+            // to ensure "HasErrors" is required (not null)
+            if (HasErrors == null)
+            {
+                throw new InvalidDataException("HasErrors is a required property for BackgroundCheckResponse and cannot be null");
+            }
+            else
+            {
+                this.HasErrors = HasErrors;
+            }
+            this.Errors = Errors;
             
         }
 
         /// <summary>
-        /// Gets or Sets ProfessionalExperiences
+        /// Gets or Sets HasErrors
         /// </summary>
-        [DataMember(Name="professionalExperiences")]
-        public List<ProfessionalExperience> ProfessionalExperiences { get; set; }
+        [DataMember(Name="hasErrors")]
+        public bool? HasErrors { get; set; }
 
         /// <summary>
-        /// Gets or Sets Educations
+        /// Gets or Sets Errors
         /// </summary>
-        [DataMember(Name="educations")]
-        public List<Education> Educations { get; set; }
-
-        /// <summary>
-        /// Gets or Sets Certifications
-        /// </summary>
-        [DataMember(Name="certifications")]
-        public List<Certification> Certifications { get; set; }
+        [DataMember(Name="errors")]
+        public List<Error> Errors { get; set; }
 
 
         /// <summary>
@@ -78,10 +78,9 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class ApplicantDataResume {\n");
-            sb.Append("  ProfessionalExperiences: ").Append(ProfessionalExperiences).Append("\n");
-            sb.Append("  Educations: ").Append(Educations).Append("\n");
-            sb.Append("  Certifications: ").Append(Certifications).Append("\n");
+            sb.Append("class BackgroundCheckResponse {\n");
+            sb.Append("  HasErrors: ").Append(HasErrors).Append("\n");
+            sb.Append("  Errors: ").Append(Errors).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -105,15 +104,15 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ApplicantDataResume)obj);
+            return Equals((BackgroundCheckResponse)obj);
         }
 
         /// <summary>
-        /// Returns true if ApplicantDataResume instances are equal
+        /// Returns true if BackgroundCheckResponse instances are equal
         /// </summary>
-        /// <param name="other">Instance of ApplicantDataResume to be compared</param>
+        /// <param name="other">Instance of BackgroundCheckResponse to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(ApplicantDataResume other)
+        public bool Equals(BackgroundCheckResponse other)
         {
 
             if (ReferenceEquals(null, other)) return false;
@@ -121,19 +120,14 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
 
             return 
                 (
-                    this.ProfessionalExperiences == other.ProfessionalExperiences ||
-                    this.ProfessionalExperiences != null &&
-                    this.ProfessionalExperiences.SequenceEqual(other.ProfessionalExperiences)
+                    this.HasErrors == other.HasErrors ||
+                    this.HasErrors != null &&
+                    this.HasErrors.Equals(other.HasErrors)
                 ) && 
                 (
-                    this.Educations == other.Educations ||
-                    this.Educations != null &&
-                    this.Educations.SequenceEqual(other.Educations)
-                ) && 
-                (
-                    this.Certifications == other.Certifications ||
-                    this.Certifications != null &&
-                    this.Certifications.SequenceEqual(other.Certifications)
+                    this.Errors == other.Errors ||
+                    this.Errors != null &&
+                    this.Errors.SequenceEqual(other.Errors)
                 );
         }
 
@@ -148,24 +142,22 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
             {
                 int hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.ProfessionalExperiences != null)
-                    hash = hash * 59 + this.ProfessionalExperiences.GetHashCode();
-                if (this.Educations != null)
-                    hash = hash * 59 + this.Educations.GetHashCode();
-                if (this.Certifications != null)
-                    hash = hash * 59 + this.Certifications.GetHashCode();
+                if (this.HasErrors != null)
+                    hash = hash * 59 + this.HasErrors.GetHashCode();
+                if (this.Errors != null)
+                    hash = hash * 59 + this.Errors.GetHashCode();
                 return hash;
             }
         }
 
         #region Operators
 
-        public static bool operator ==(ApplicantDataResume left, ApplicantDataResume right)
+        public static bool operator ==(BackgroundCheckResponse left, BackgroundCheckResponse right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(ApplicantDataResume left, ApplicantDataResume right)
+        public static bool operator !=(BackgroundCheckResponse left, BackgroundCheckResponse right)
         {
             return !Equals(left, right);
         }

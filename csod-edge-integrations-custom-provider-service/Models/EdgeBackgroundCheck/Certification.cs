@@ -30,23 +30,55 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
+namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCheck
 {
     /// <summary>
     /// 
     /// </summary>
     [DataContract]
-    public partial class Error :  IEquatable<Error>
+    public partial class Certification :  IEquatable<Certification>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Error" /> class.
+        /// Initializes a new instance of the <see cref="Certification" /> class.
         /// </summary>
+        /// <param name="Name">Name.</param>
+        /// <param name="Organization">Organization.</param>
+        /// <param name="IssuedDate">IssuedDate.</param>
+        /// <param name="ExpirationDate">ExpirationDate.</param>
         /// <param name="Description">Description.</param>
-        public Error(string Description = null)
+        public Certification(string Name = null, string Organization = null, string IssuedDate = null, string ExpirationDate = null, string Description = null)
         {
+            this.Name = Name;
+            this.Organization = Organization;
+            this.IssuedDate = IssuedDate;
+            this.ExpirationDate = ExpirationDate;
             this.Description = Description;
             
         }
+
+        /// <summary>
+        /// Gets or Sets Name
+        /// </summary>
+        [DataMember(Name="name")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or Sets Organization
+        /// </summary>
+        [DataMember(Name="organization")]
+        public string Organization { get; set; }
+
+        /// <summary>
+        /// Gets or Sets IssuedDate
+        /// </summary>
+        [DataMember(Name="issuedDate")]
+        public string IssuedDate { get; set; }
+
+        /// <summary>
+        /// Gets or Sets ExpirationDate
+        /// </summary>
+        [DataMember(Name="expirationDate")]
+        public string ExpirationDate { get; set; }
 
         /// <summary>
         /// Gets or Sets Description
@@ -62,7 +94,11 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class Error {\n");
+            sb.Append("class Certification {\n");
+            sb.Append("  Name: ").Append(Name).Append("\n");
+            sb.Append("  Organization: ").Append(Organization).Append("\n");
+            sb.Append("  IssuedDate: ").Append(IssuedDate).Append("\n");
+            sb.Append("  ExpirationDate: ").Append(ExpirationDate).Append("\n");
             sb.Append("  Description: ").Append(Description).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -87,21 +123,41 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((Error)obj);
+            return Equals((Certification)obj);
         }
 
         /// <summary>
-        /// Returns true if Error instances are equal
+        /// Returns true if Certification instances are equal
         /// </summary>
-        /// <param name="other">Instance of Error to be compared</param>
+        /// <param name="other">Instance of Certification to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(Error other)
+        public bool Equals(Certification other)
         {
 
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
             return 
+                (
+                    this.Name == other.Name ||
+                    this.Name != null &&
+                    this.Name.Equals(other.Name)
+                ) && 
+                (
+                    this.Organization == other.Organization ||
+                    this.Organization != null &&
+                    this.Organization.Equals(other.Organization)
+                ) && 
+                (
+                    this.IssuedDate == other.IssuedDate ||
+                    this.IssuedDate != null &&
+                    this.IssuedDate.Equals(other.IssuedDate)
+                ) && 
+                (
+                    this.ExpirationDate == other.ExpirationDate ||
+                    this.ExpirationDate != null &&
+                    this.ExpirationDate.Equals(other.ExpirationDate)
+                ) && 
                 (
                     this.Description == other.Description ||
                     this.Description != null &&
@@ -120,6 +176,14 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
             {
                 int hash = 41;
                 // Suitable nullity checks etc, of course :)
+                if (this.Name != null)
+                    hash = hash * 59 + this.Name.GetHashCode();
+                if (this.Organization != null)
+                    hash = hash * 59 + this.Organization.GetHashCode();
+                if (this.IssuedDate != null)
+                    hash = hash * 59 + this.IssuedDate.GetHashCode();
+                if (this.ExpirationDate != null)
+                    hash = hash * 59 + this.ExpirationDate.GetHashCode();
                 if (this.Description != null)
                     hash = hash * 59 + this.Description.GetHashCode();
                 return hash;
@@ -128,12 +192,12 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
 
         #region Operators
 
-        public static bool operator ==(Error left, Error right)
+        public static bool operator ==(Certification left, Certification right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(Error left, Error right)
+        public static bool operator !=(Certification left, Certification right)
         {
             return !Equals(left, right);
         }

@@ -30,7 +30,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
+namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCheck
 {
     /// <summary>
     /// 

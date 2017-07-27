@@ -30,45 +30,64 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
+namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCheck
 {
     /// <summary>
     /// 
     /// </summary>
     [DataContract]
-    public partial class BackgroundCheckResponse :  IEquatable<BackgroundCheckResponse>
+    public partial class ApplicantDataContactInfo :  IEquatable<ApplicantDataContactInfo>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BackgroundCheckResponse" /> class.
+        /// Initializes a new instance of the <see cref="ApplicantDataContactInfo" /> class.
         /// </summary>
-        /// <param name="HasErrors">HasErrors (required).</param>
-        /// <param name="Errors">Errors.</param>
-        public BackgroundCheckResponse(bool? HasErrors = null, List<Error> Errors = null)
+        /// <param name="Email">Email (required).</param>
+        /// <param name="Phone">phone number.</param>
+        /// <param name="HomePhone">phone number.</param>
+        /// <param name="Mobile">phone number.</param>
+        public ApplicantDataContactInfo(string Email = null, string Phone = null, string HomePhone = null, string Mobile = null)
         {
-            // to ensure "HasErrors" is required (not null)
-            if (HasErrors == null)
+            // to ensure "Email" is required (not null)
+            if (Email == null)
             {
-                throw new InvalidDataException("HasErrors is a required property for BackgroundCheckResponse and cannot be null");
+                throw new InvalidDataException("Email is a required property for ApplicantDataContactInfo and cannot be null");
             }
             else
             {
-                this.HasErrors = HasErrors;
+                this.Email = Email;
             }
-            this.Errors = Errors;
+            this.Phone = Phone;
+            this.HomePhone = HomePhone;
+            this.Mobile = Mobile;
             
         }
 
         /// <summary>
-        /// Gets or Sets HasErrors
+        /// Gets or Sets Email
         /// </summary>
-        [DataMember(Name="hasErrors")]
-        public bool? HasErrors { get; set; }
+        [DataMember(Name="email")]
+        public string Email { get; set; }
 
         /// <summary>
-        /// Gets or Sets Errors
+        /// phone number
         /// </summary>
-        [DataMember(Name="errors")]
-        public List<Error> Errors { get; set; }
+        /// <value>phone number</value>
+        [DataMember(Name="phone")]
+        public string Phone { get; set; }
+
+        /// <summary>
+        /// phone number
+        /// </summary>
+        /// <value>phone number</value>
+        [DataMember(Name="homePhone")]
+        public string HomePhone { get; set; }
+
+        /// <summary>
+        /// phone number
+        /// </summary>
+        /// <value>phone number</value>
+        [DataMember(Name="mobile")]
+        public string Mobile { get; set; }
 
 
         /// <summary>
@@ -78,9 +97,11 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class BackgroundCheckResponse {\n");
-            sb.Append("  HasErrors: ").Append(HasErrors).Append("\n");
-            sb.Append("  Errors: ").Append(Errors).Append("\n");
+            sb.Append("class ApplicantDataContactInfo {\n");
+            sb.Append("  Email: ").Append(Email).Append("\n");
+            sb.Append("  Phone: ").Append(Phone).Append("\n");
+            sb.Append("  HomePhone: ").Append(HomePhone).Append("\n");
+            sb.Append("  Mobile: ").Append(Mobile).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -104,15 +125,15 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((BackgroundCheckResponse)obj);
+            return Equals((ApplicantDataContactInfo)obj);
         }
 
         /// <summary>
-        /// Returns true if BackgroundCheckResponse instances are equal
+        /// Returns true if ApplicantDataContactInfo instances are equal
         /// </summary>
-        /// <param name="other">Instance of BackgroundCheckResponse to be compared</param>
+        /// <param name="other">Instance of ApplicantDataContactInfo to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(BackgroundCheckResponse other)
+        public bool Equals(ApplicantDataContactInfo other)
         {
 
             if (ReferenceEquals(null, other)) return false;
@@ -120,14 +141,24 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
 
             return 
                 (
-                    this.HasErrors == other.HasErrors ||
-                    this.HasErrors != null &&
-                    this.HasErrors.Equals(other.HasErrors)
+                    this.Email == other.Email ||
+                    this.Email != null &&
+                    this.Email.Equals(other.Email)
                 ) && 
                 (
-                    this.Errors == other.Errors ||
-                    this.Errors != null &&
-                    this.Errors.SequenceEqual(other.Errors)
+                    this.Phone == other.Phone ||
+                    this.Phone != null &&
+                    this.Phone.Equals(other.Phone)
+                ) && 
+                (
+                    this.HomePhone == other.HomePhone ||
+                    this.HomePhone != null &&
+                    this.HomePhone.Equals(other.HomePhone)
+                ) && 
+                (
+                    this.Mobile == other.Mobile ||
+                    this.Mobile != null &&
+                    this.Mobile.Equals(other.Mobile)
                 );
         }
 
@@ -142,22 +173,26 @@ namespace csod_edge_integrations_custom_provider_service.Models.BackgroundCheck
             {
                 int hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.HasErrors != null)
-                    hash = hash * 59 + this.HasErrors.GetHashCode();
-                if (this.Errors != null)
-                    hash = hash * 59 + this.Errors.GetHashCode();
+                if (this.Email != null)
+                    hash = hash * 59 + this.Email.GetHashCode();
+                if (this.Phone != null)
+                    hash = hash * 59 + this.Phone.GetHashCode();
+                if (this.HomePhone != null)
+                    hash = hash * 59 + this.HomePhone.GetHashCode();
+                if (this.Mobile != null)
+                    hash = hash * 59 + this.Mobile.GetHashCode();
                 return hash;
             }
         }
 
         #region Operators
 
-        public static bool operator ==(BackgroundCheckResponse left, BackgroundCheckResponse right)
+        public static bool operator ==(ApplicantDataContactInfo left, ApplicantDataContactInfo right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(BackgroundCheckResponse left, BackgroundCheckResponse right)
+        public static bool operator !=(ApplicantDataContactInfo left, ApplicantDataContactInfo right)
         {
             return !Equals(left, right);
         }
