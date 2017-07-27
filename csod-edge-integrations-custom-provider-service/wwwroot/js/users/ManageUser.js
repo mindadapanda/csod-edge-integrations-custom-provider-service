@@ -1,18 +1,17 @@
 ﻿var ManageUser = Vue.extend({
     template: '<div class="ui container" id="manage-user-container">\
-            <div class="ui raised green segment">\
+            <div class="ui raised blue segment">\
                 <div class="ui header">Manage User: {{ User.username }}</div>\
-                <div class="ui form warning">\
+                <div class="ui form">\
                     <h4 class="ui dividing header">User Information</h4>\
-                    <div class="ui warning message"><div class="header">If you change the password, you will be required to re- login using the new password.</div></div>\
                     <div class="two fields">\
                         <div class="disabled field">\
                             <label>Username</label>\
                             <input type="text" placeholder="username" v-model="User.username" />\
                         </div>\
                         <div class="field">\
-                            <label>Password</label>\
-                            <input v-show="showPasswordInput" type="password" placeholder="username" v-model="User.password" />\
+                            <label>Password - <span style="color: #9f3a38;"> If you change the password, you will be required to re-login.</span></label>\
+                            <input v-show="showPasswordInput" type="password" placeholder="password" v-model="User.password" />\
                             <div class="ui small right floated button" v-on:click="changePassword($event)" id="change-password-button">Change Password</div>\
                         </div>\
                     </div>\
@@ -39,6 +38,9 @@
     methods: {
         changePassword: function (event) {
             if (this.showPasswordInput) {
+                if (this.User.password == '') {
+                    return;
+                }
                 //if password input is already shown and this button is triggered again we should go and update the password
                 var self = this;
                 $.ajax({
@@ -67,6 +69,7 @@
                 });
             }
             else {
+                this.User.password = '';
                 var button = $(event.currentTarget);
                 button.text('Update Password');
                 button.addClass('yellow');

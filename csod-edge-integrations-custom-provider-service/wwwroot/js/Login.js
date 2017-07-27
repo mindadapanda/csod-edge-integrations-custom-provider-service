@@ -8,7 +8,7 @@
                         </div>\
                         <div class="field">\
                             <label>Password</label>\
-                            <input type="text" placeholder="password" v-model="Password" />\
+                            <input type="text" placeholder="password" v-model="Password" v-on:keyup.enter="login()" />\
                         </div>\
                         <div class="ui fluid green button" v-on:click="login()">Login</div>\
                         <div class="ui basic red fluid label" v-show="showFailedLogin" id="failed-login-label">Failed to Login! Username or Password is incorrect!</div>\
