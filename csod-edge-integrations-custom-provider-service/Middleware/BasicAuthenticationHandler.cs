@@ -1,4 +1,5 @@
-﻿using csod_edge_integrations_custom_provider_service.Models;
+﻿using csod_edge_integrations_custom_provider_service.Data;
+using csod_edge_integrations_custom_provider_service.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Authentication;
 using System;
@@ -13,8 +14,10 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
 
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
     {
-        public BasicAuthenticationHandler()
+        UserRepository _userRepository;
+        public BasicAuthenticationHandler(UserRepository userRepository)
         {
+            _userRepository = userRepository;
         }
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {            
@@ -32,27 +35,16 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
                 var username = usernamePassword.Substring(0, seperatorIndex);
                 var password = usernamePassword.Substring(seperatorIndex + 1);
 
-                if (username == "test" && password == "test")
+                var user = _userRepository.GetUserByUsername(username);
+                if (user != null)
                 {
-                    var user = new GenericPrincipal(new GenericIdentity("test"), null);
-                    var ticket = new AuthenticationTicket(user, new AuthenticationProperties(), Options.AuthenticationScheme);
-                    return Task.FromResult(AuthenticateResult.Success(ticket));           
+                    if (UserTool.DoPasswordsMatch(password, user.Password))
+                    {
+                        var principle = new GenericPrincipal(new BasicAuthenticationIdentity(user.Username, user.HashCode), null);
+                        var ticket = new AuthenticationTicket(principle, new AuthenticationProperties(), Options.AuthenticationScheme);
+                        return Task.FromResult(AuthenticateResult.Success(ticket));
+                    }
                 }
-                else
-                {
-
-                    //var dbUser = _userContext.Users.SingleOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
-                    //if (dbUser != null)
-                    //{
-                    //    if (dbUser.Password.Equals(password))
-                    //    {
-                    //        var user = new CustomPrinciple(dbUser);
-                    //        var ticket = new AuthenticationTicket(user, new AuthenticationProperties(), Options.AuthenticationScheme);
-                    //        return Task.FromResult(AuthenticateResult.Success(ticket));
-                    //    }
-                    //}
-                }
-
                 return Task.FromResult(AuthenticateResult.Fail("No valid user."));
             }
 
