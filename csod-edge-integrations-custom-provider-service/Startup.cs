@@ -37,6 +37,7 @@ namespace csod_edge_integrations_custom_provider_service
             services.AddSingleton(x => new LiteRepository($"{ApplicationEnvironment.ApplicationBasePath}\\{Configuration.GetConnectionString("LiteDbDev")}"));
             services.AddSingleton<UserRepository>();
             services.AddSingleton<SettingsRepository>();
+            services.AddSingleton<CallbackRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
