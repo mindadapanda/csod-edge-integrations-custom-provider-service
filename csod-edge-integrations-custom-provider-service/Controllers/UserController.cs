@@ -60,35 +60,35 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         //    return NotFound();
         //}
 
-        //[Route("api/user")]
-        //[HttpPost]
-        //public IActionResult CreateUser([FromBody]User user)
-        //{
-        //    try
-        //    {
-        //        if (string.IsNullOrWhiteSpace(user.Username)
-        //            || string.IsNullOrWhiteSpace(user.Password))
-        //        {
-        //            return BadRequest();
-        //        }
-        //        //make username unqiue
-        //        var users = UserRepository.GetAll();
-        //        if(users.Any(x => x.Username.Equals(user.Username)))
-        //        {
-        //            return BadRequest();
-        //        }
-        //        //make sure to salt and hash the user password
-        //        user.Password = UserTool.GenerateSaltedHash(user.Password);
+        [Route("api/user")]
+        [HttpPost]
+        public IActionResult CreateUser([FromBody]User user)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(user.Username)
+                    || string.IsNullOrWhiteSpace(user.Password))
+                {
+                    return BadRequest();
+                }
+                //make username unqiue
+                var users = UserRepository.GetAll();
+                if (users.Any(x => x.Username.Equals(user.Username)))
+                {
+                    return BadRequest();
+                }
+                //make sure to salt and hash the user password
+                user.Password = UserTool.GenerateSaltedHash(user.Password);
 
-        //        UserRepository.CreateUser(user);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
+                UserRepository.CreateUser(user);
+            }
+            catch
+            {
+                return BadRequest();
+            }
 
-        //    return new NoContentResult();
-        //}
+            return new NoContentResult();
+        }
 
         //[Route("api/user/{id}")]
         //[HttpPut]
@@ -124,22 +124,26 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         //    return new NoContentResult();
         //}
 
-        //[Route("api/user/login")]
-        //[HttpPost]
-        //public IActionResult Login([FromBody]UserLoginRequest loginRequest)
-        //{
-        //    if (string.IsNullOrWhiteSpace(loginRequest.Username)
-        //        || string.IsNullOrWhiteSpace(loginRequest.Password))
-        //    {
-        //        return BadRequest();
-        //    }
-        //    var user = UserRepository.GetUserByUsername(loginRequest.Username);
-        //    if(UserTool.DoPasswordsMatch(loginRequest.Password, user.Password))
-        //    {
-        //        return Ok(user);
-        //    }
-        //    return BadRequest();
-        //}
+        [Route("api/user/login")]
+        [HttpPost]
+        public IActionResult Login([FromBody]UserLoginRequest loginRequest)
+        {
+            if (string.IsNullOrWhiteSpace(loginRequest.Username)
+                || string.IsNullOrWhiteSpace(loginRequest.Password))
+            {
+                return BadRequest();
+            }
+            var user = UserRepository.GetUserByUsername(loginRequest.Username);
+            if (user != null)
+            {
+                if (UserTool.DoPasswordsMatch(loginRequest.Password, user.Password))
+                {
+                    return Ok(user);
+                }
+                return BadRequest();
+            }
+            return BadRequest();
+        }
 
         [Route("api/getuserandsettings")]
         [HttpPost]
