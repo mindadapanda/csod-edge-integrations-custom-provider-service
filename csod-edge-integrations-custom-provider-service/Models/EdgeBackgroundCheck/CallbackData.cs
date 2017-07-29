@@ -36,15 +36,16 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
     /// callback data includes the callback URL to use as well as the required callback data marked as required
     /// </summary>
     [DataContract]
-    public partial class CallbackData :  IEquatable<CallbackData>
+    public partial class CallbackData : IEquatable<CallbackData>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CallbackData" /> class.
         /// </summary>
+        /// <param name="CallbackUrl">url used to make callbacks into edge for updates to background checks.</param>
         /// <param name="ApplicantRefId">this is the reference id that needs to be provided on callbacks to help identify applicants (required).</param>
         /// <param name="ApplicantRefUserId">this is the userid reference that needs to be provided on callbacks (required).</param>
         /// <param name="ApplicantRefOrderId">this is the orderid reference that needs to be provided on callbacks (required).</param>
-        public CallbackData(string ApplicantRefId = null, string ApplicantRefUserId = null, string ApplicantRefOrderId = null)
+        public CallbackData(string CallbackUrl = null, string ApplicantRefId = null, string ApplicantRefUserId = null, string ApplicantRefOrderId = null)
         {
             // to ensure "ApplicantRefId" is required (not null)
             if (ApplicantRefId == null)
@@ -73,28 +74,36 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             {
                 this.ApplicantRefOrderId = ApplicantRefOrderId;
             }
-            
+            this.CallbackUrl = CallbackUrl;
+
         }
+
+        /// <summary>
+        /// url used to make callbacks into edge for updates to background checks
+        /// </summary>
+        /// <value>url used to make callbacks into edge for updates to background checks</value>
+        [DataMember(Name = "callbackUrl")]
+        public string CallbackUrl { get; set; }
 
         /// <summary>
         /// this is the reference id that needs to be provided on callbacks to help identify applicants
         /// </summary>
         /// <value>this is the reference id that needs to be provided on callbacks to help identify applicants</value>
-        [DataMember(Name="applicantRefId")]
+        [DataMember(Name = "applicantRefId")]
         public string ApplicantRefId { get; set; }
 
         /// <summary>
         /// this is the userid reference that needs to be provided on callbacks
         /// </summary>
         /// <value>this is the userid reference that needs to be provided on callbacks</value>
-        [DataMember(Name="applicantRefUserId")]
+        [DataMember(Name = "applicantRefUserId")]
         public string ApplicantRefUserId { get; set; }
 
         /// <summary>
         /// this is the orderid reference that needs to be provided on callbacks
         /// </summary>
         /// <value>this is the orderid reference that needs to be provided on callbacks</value>
-        [DataMember(Name="applicantRefOrderId")]
+        [DataMember(Name = "applicantRefOrderId")]
         public string ApplicantRefOrderId { get; set; }
 
 
@@ -106,6 +115,7 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
         {
             var sb = new StringBuilder();
             sb.Append("class CallbackData {\n");
+            sb.Append("  CallbackUrl: ").Append(CallbackUrl).Append("\n");
             sb.Append("  ApplicantRefId: ").Append(ApplicantRefId).Append("\n");
             sb.Append("  ApplicantRefUserId: ").Append(ApplicantRefUserId).Append("\n");
             sb.Append("  ApplicantRefOrderId: ").Append(ApplicantRefOrderId).Append("\n");
@@ -146,17 +156,22 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
+                (
+                    this.CallbackUrl == other.CallbackUrl ||
+                    this.CallbackUrl != null &&
+                    this.CallbackUrl.Equals(other.CallbackUrl)
+                ) &&
                 (
                     this.ApplicantRefId == other.ApplicantRefId ||
                     this.ApplicantRefId != null &&
                     this.ApplicantRefId.Equals(other.ApplicantRefId)
-                ) && 
+                ) &&
                 (
                     this.ApplicantRefUserId == other.ApplicantRefUserId ||
                     this.ApplicantRefUserId != null &&
                     this.ApplicantRefUserId.Equals(other.ApplicantRefUserId)
-                ) && 
+                ) &&
                 (
                     this.ApplicantRefOrderId == other.ApplicantRefOrderId ||
                     this.ApplicantRefOrderId != null &&
@@ -175,6 +190,8 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             {
                 int hash = 41;
                 // Suitable nullity checks etc, of course :)
+                if (this.CallbackUrl != null)
+                    hash = hash * 59 + this.CallbackUrl.GetHashCode();
                 if (this.ApplicantRefId != null)
                     hash = hash * 59 + this.ApplicantRefId.GetHashCode();
                 if (this.ApplicantRefUserId != null)

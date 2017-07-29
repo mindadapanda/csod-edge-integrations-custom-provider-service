@@ -36,7 +36,7 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
     /// 
     /// </summary>
     [DataContract]
-    public partial class ApplicantData :  IEquatable<ApplicantData>
+    public partial class ApplicantData : IEquatable<ApplicantData>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicantData" /> class.
@@ -46,10 +46,11 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
         /// <param name="MiddleName">MiddleName.</param>
         /// <param name="NamePrefix">prefix.</param>
         /// <param name="NameSuffix">suffix.</param>
+        /// <param name="RecruiterEmail">email of the person requesting the background check.</param>
         /// <param name="ContactInfo">ContactInfo.</param>
         /// <param name="Address">Address.</param>
         /// <param name="Resume">Resume.</param>
-        public ApplicantData(string FirstName = null, string LastName = null, string MiddleName = null, string NamePrefix = null, string NameSuffix = null, ApplicantDataContactInfo ContactInfo = null, ApplicantDataAddress Address = null, ApplicantDataResume Resume = null)
+        public ApplicantData(string FirstName = null, string LastName = null, string MiddleName = null, string NamePrefix = null, string NameSuffix = null, string RecruiterEmail = null, ApplicantDataContactInfo ContactInfo = null, ApplicantDataAddress Address = null, ApplicantDataResume Resume = null)
         {
             // to ensure "FirstName" is required (not null)
             if (FirstName == null)
@@ -72,60 +73,68 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             this.MiddleName = MiddleName;
             this.NamePrefix = NamePrefix;
             this.NameSuffix = NameSuffix;
+            this.RecruiterEmail = RecruiterEmail;
             this.ContactInfo = ContactInfo;
             this.Address = Address;
             this.Resume = Resume;
-            
+
         }
 
         /// <summary>
         /// Gets or Sets FirstName
         /// </summary>
-        [DataMember(Name="firstName")]
+        [DataMember(Name = "firstName")]
         public string FirstName { get; set; }
 
         /// <summary>
         /// Gets or Sets LastName
         /// </summary>
-        [DataMember(Name="lastName")]
+        [DataMember(Name = "lastName")]
         public string LastName { get; set; }
 
         /// <summary>
         /// Gets or Sets MiddleName
         /// </summary>
-        [DataMember(Name="middleName")]
+        [DataMember(Name = "middleName")]
         public string MiddleName { get; set; }
 
         /// <summary>
         /// prefix
         /// </summary>
         /// <value>prefix</value>
-        [DataMember(Name="namePrefix")]
+        [DataMember(Name = "namePrefix")]
         public string NamePrefix { get; set; }
 
         /// <summary>
         /// suffix
         /// </summary>
         /// <value>suffix</value>
-        [DataMember(Name="nameSuffix")]
+        [DataMember(Name = "nameSuffix")]
         public string NameSuffix { get; set; }
+
+        /// <summary>
+        /// email of the person requesting the background check
+        /// </summary>
+        /// <value>email of the person requesting the background check</value>
+        [DataMember(Name = "recruiterEmail")]
+        public string RecruiterEmail { get; set; }
 
         /// <summary>
         /// Gets or Sets ContactInfo
         /// </summary>
-        [DataMember(Name="contactInfo")]
+        [DataMember(Name = "contactInfo")]
         public ApplicantDataContactInfo ContactInfo { get; set; }
 
         /// <summary>
         /// Gets or Sets Address
         /// </summary>
-        [DataMember(Name="address")]
+        [DataMember(Name = "address")]
         public ApplicantDataAddress Address { get; set; }
 
         /// <summary>
         /// Gets or Sets Resume
         /// </summary>
-        [DataMember(Name="resume")]
+        [DataMember(Name = "resume")]
         public ApplicantDataResume Resume { get; set; }
 
 
@@ -142,6 +151,7 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             sb.Append("  MiddleName: ").Append(MiddleName).Append("\n");
             sb.Append("  NamePrefix: ").Append(NamePrefix).Append("\n");
             sb.Append("  NameSuffix: ").Append(NameSuffix).Append("\n");
+            sb.Append("  RecruiterEmail: ").Append(RecruiterEmail).Append("\n");
             sb.Append("  ContactInfo: ").Append(ContactInfo).Append("\n");
             sb.Append("  Address: ").Append(Address).Append("\n");
             sb.Append("  Resume: ").Append(Resume).Append("\n");
@@ -182,42 +192,47 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     this.FirstName == other.FirstName ||
                     this.FirstName != null &&
                     this.FirstName.Equals(other.FirstName)
-                ) && 
+                ) &&
                 (
                     this.LastName == other.LastName ||
                     this.LastName != null &&
                     this.LastName.Equals(other.LastName)
-                ) && 
+                ) &&
                 (
                     this.MiddleName == other.MiddleName ||
                     this.MiddleName != null &&
                     this.MiddleName.Equals(other.MiddleName)
-                ) && 
+                ) &&
                 (
                     this.NamePrefix == other.NamePrefix ||
                     this.NamePrefix != null &&
                     this.NamePrefix.Equals(other.NamePrefix)
-                ) && 
+                ) &&
                 (
                     this.NameSuffix == other.NameSuffix ||
                     this.NameSuffix != null &&
                     this.NameSuffix.Equals(other.NameSuffix)
-                ) && 
+                ) &&
+                (
+                    this.RecruiterEmail == other.RecruiterEmail ||
+                    this.RecruiterEmail != null &&
+                    this.RecruiterEmail.Equals(other.RecruiterEmail)
+                ) &&
                 (
                     this.ContactInfo == other.ContactInfo ||
                     this.ContactInfo != null &&
                     this.ContactInfo.Equals(other.ContactInfo)
-                ) && 
+                ) &&
                 (
                     this.Address == other.Address ||
                     this.Address != null &&
                     this.Address.Equals(other.Address)
-                ) && 
+                ) &&
                 (
                     this.Resume == other.Resume ||
                     this.Resume != null &&
@@ -246,6 +261,8 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
                     hash = hash * 59 + this.NamePrefix.GetHashCode();
                 if (this.NameSuffix != null)
                     hash = hash * 59 + this.NameSuffix.GetHashCode();
+                if (this.RecruiterEmail != null)
+                    hash = hash * 59 + this.RecruiterEmail.GetHashCode();
                 if (this.ContactInfo != null)
                     hash = hash * 59 + this.ContactInfo.GetHashCode();
                 if (this.Address != null)

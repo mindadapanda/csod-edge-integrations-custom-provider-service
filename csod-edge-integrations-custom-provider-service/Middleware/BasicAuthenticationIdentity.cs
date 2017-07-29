@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
     {
         readonly string _name;
         readonly int _id;
+        //public BasicAuthenticationIdentity(string name, int id)
         public BasicAuthenticationIdentity(string name, int id)
         {
             _name = name;
