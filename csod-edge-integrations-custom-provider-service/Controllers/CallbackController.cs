@@ -6,6 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using csod_edge_integrations_custom_provider_service.Data;
 using csod_edge_integrations_custom_provider_service.Models;
+using AonHewitt.Lib;
+using System.IO;
+using AonHewitt.Lib.Models;
+using csod_edge_integrations_custom_provider_service.Models.Assessment;
+using RestSharp;
+using Microsoft.Extensions.Logging;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {
@@ -13,16 +19,20 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
     [Produces("application/json")]
     public class CallbackController : Controller
     {
+        private readonly Microsoft.Extensions.Logging.ILogger _logger;
         protected CallbackRepository CallbackRepository;
-        public CallbackController(CallbackRepository callbackRepository)
+        public CallbackController(CallbackRepository callbackRepository, ILogger<CallbackController> logger)
         {
             CallbackRepository = callbackRepository;
+            _logger = logger;
         }
 
         [Route("api/callback/{id}")]
         [HttpPost]
         public IActionResult CallbackEndpoint(Guid id)
         {
+            _logger.LogInformation("Callback recieved.");
+
             var callbackFromRepo = CallbackRepository.GetCallbackByGuid(id);
             if(callbackFromRepo != null)
             {
@@ -40,7 +50,40 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 CallbackRepository.DecrementCallbackLimit(callbackFromRepo.Id);
 
 
+                var aonHewittClient = new AonHewittClient();
+                ApplicantScore applicantScore = null;
+                using (StreamReader reader = new StreamReader(Response.Body))
+                {
+                    applicantScore = aonHewittClient.ParseApplicantScore(reader.ReadToEnd());
+                }
 
+                if (applicantScore != null)
+                {
+                    bool isPassed = applicantScore.Pass.Equals("true", StringComparison.OrdinalIgnoreCase) || applicantScore.Pass.Equals("1", StringComparison.OrdinalIgnoreCase) ? true : false;
+                    string band = aonHewittClient.GetResourceKeyFromAonBandEnumerator(applicantScore.Band);
+
+                    var result = new AssessmentResults()
+                    {
+                        IsPass = isPassed,
+                        Score = applicantScore.Score,
+                        Comments = band,
+                        DetailsUrl = applicantScore.TextDescription
+                    };
+
+                    var client = new RestClient();
+                    var request = new RestRequest(callbackFromRepo.EdgeCallbackUrl, Method.POST);
+                    request.AddHeader("x-csod-edge-api-key", "PW9totT67fiz87tNMoR2yoncF/M=");
+                    request.AddJsonBody(result);
+
+                    client.ExecuteAsync(request, x =>
+                    {
+                       if(x.StatusCode != System.Net.HttpStatusCode.OK)
+                        {
+                            _logger.LogInformation("Error sending callback results back to edge.");
+                        };
+                    });
+                }
+               
                 //finally return status 200 to let requestor know we received the request
                 return Ok();
             }

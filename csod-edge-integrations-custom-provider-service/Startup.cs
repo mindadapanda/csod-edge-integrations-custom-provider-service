@@ -38,6 +38,8 @@ namespace csod_edge_integrations_custom_provider_service
             services.AddSingleton<UserRepository>();
             services.AddSingleton<SettingsRepository>();
             services.AddSingleton<CallbackRepository>();
+            services.AddSingleton<CallbackGenerator>();
+            services.Configure<Options>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
