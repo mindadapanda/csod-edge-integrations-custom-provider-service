@@ -12,6 +12,8 @@ namespace csod_edge_integrations_custom_provider_service.Models
         public Guid PublicId { get; set; }
         public string EdgeCallbackUrl { get; set; }
         public int Limit { get; set; }
+        //the userid tied to the callback thus we can get the settings
+        public int UserId { get; set; }
         //the callback data that came from csod
         public CallbackData CallbackDataFromCsod { get; set; } 
     }

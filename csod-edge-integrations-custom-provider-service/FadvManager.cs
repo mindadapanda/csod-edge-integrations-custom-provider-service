@@ -18,7 +18,7 @@ namespace csod_edge_integrations_custom_provider_service
     {
         protected Settings Settings;
 
-        public FadvManager(Settings settings = null)
+        public FadvManager(Settings settings)
         {
             Settings = settings;
         }
@@ -102,18 +102,29 @@ namespace csod_edge_integrations_custom_provider_service
                                               ? package.PackageInformation[0].OrderAccount[0].Account : null;
                 string reportUrl = package.ScreeningResults[0].InternetWebAddress;
                 //call fadv to get report url
-                var reportUrlFromFadv = this.GetReportUrl(package.ProviderReferenceId, recruiterEmail, orderingAccount);
-                if (!string.IsNullOrWhiteSpace(reportUrlFromFadv))
+                //only get reportUrl if we have a complete statu
+                if (status == IntegrationOrderResultStatus.Completed)
                 {
-                    reportUrl = reportUrlFromFadv;
+                    var reportUrlFromFadv = this.GetReportUrl(package.ProviderReferenceId, recruiterEmail, orderingAccount);
+                    if (!string.IsNullOrWhiteSpace(reportUrlFromFadv))
+                    {
+                        reportUrl = reportUrlFromFadv;
+                    }
                 }
                 bgCheckReportForCsod.ReportUrl = reportUrl;
 
                 //send this off to csod
-                using(var response = this.SendRequest(callbackDataFromEdge.CallbackUrl, "POST", JsonConvert.SerializeObject(bgCheckReportForCsod)))
-                {
-
-                }
+                this.SendRequest(callbackDataFromEdge.CallbackUrl, "POST", JsonConvert.SerializeObject(bgCheckReportForCsod));
+                //using(var response = this.SendRequest(callbackDataFromEdge.CallbackUrl, "POST", JsonConvert.SerializeObject(bgCheckReportForCsod)))
+                //{
+                //    if(response != null){
+                //        //log anything that isn't a statuscode ok
+                //        if(response.StatusCode != HttpStatusCode.OK){
+                            
+                //        }
+                //    }
+                //    //maybe do some logging for null or bad responses from csod
+                //}
             }
         }
 
@@ -320,7 +331,22 @@ namespace csod_edge_integrations_custom_provider_service
 
         public string GetReportUrl(string providerRefId, string recruiterEmail, string orderingAccount = null)
         {
-
+            var request = new CPLinkRequest()
+            {
+                Account = Settings.Account,
+                Password = Settings.Password,
+                ProviderReferenceId = providerRefId,
+                Type = "Report",
+                UserId = Settings.UserId,
+                ViewAs = new viewAs()
+                {
+                    Account = orderingAccount ?? Settings.Account,
+                    UserId = recruiterEmail
+                }
+            };
+            var response = SendRequest(Settings.CPLinkUrl, request);
+            var linkResponse = ParseAndTypeResponseFromString<CPLinkResponse>(response.Result);
+            return linkResponse.Link;
         }
 
         public T ParseAndTypeResponseFromString<T>(string response)
@@ -408,9 +434,9 @@ namespace csod_edge_integrations_custom_provider_service
             if (body != null)
             {
                 var data = Encoding.UTF8.GetBytes(body);
-                request.ContentLength = data.Length;
+                //request.ContentLength = data.Length;
 
-                using (var s = request.GetRequestStream())
+                using (var s = request.GetRequestStreamAsync().Result)
                 {
                     s.Write(data, 0, data.Length);
                 }

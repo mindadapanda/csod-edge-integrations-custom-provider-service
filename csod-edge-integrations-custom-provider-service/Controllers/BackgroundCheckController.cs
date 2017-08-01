@@ -55,7 +55,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             var manager = new FadvManager(settings);
             var callbackUrl = this.GenerateCallback(request.CallbackData, request.CallbackData.CallbackUrl, 100);
 
-            var delimiterIndex = request.SelectedPackageId.IndexOf(";");
+            var delimiterIndex = request.SelectedPackageId.IndexOf(";", StringComparison.OrdinalIgnoreCase);
             var accountId = request.SelectedPackageId.Substring(0, delimiterIndex);
             var packageId = request.SelectedPackageId.Substring(delimiterIndex + 1);
 
