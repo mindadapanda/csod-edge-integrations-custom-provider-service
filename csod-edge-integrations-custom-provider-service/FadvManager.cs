@@ -1,6 +1,7 @@
 ﻿using csod_edge_integrations_custom_provider_service.Models;
 using csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCheck;
 using csod_edge_integrations_custom_provider_service.Models.Fadv;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,9 +18,103 @@ namespace csod_edge_integrations_custom_provider_service
     {
         protected Settings Settings;
 
-        public FadvManager(Settings settings)
+        public FadvManager(Settings settings = null)
         {
             Settings = settings;
+        }
+
+        public void ProcessCallback(string payload, CallbackData callbackDataFromEdge)
+        {
+            var bgCheckReports = this.ParseAndTypeResponseFromString<BackgroundReports>(payload);
+            //to do: add logging
+            if(bgCheckReports == null)
+            {
+                throw new Exception("Received Null Background Check Report");
+            }
+            foreach(var package in bgCheckReports.BackgroundReportPackage)
+            {
+                var bgCheckReportForCsod = new BackgroundCheckReport();
+                bgCheckReportForCsod.CallbackData = callbackDataFromEdge;
+                bgCheckReportForCsod.ProviderReferenceId = package.ProviderReferenceId;
+
+                bool isDrugScreening = package.ProviderReferenceId.StartsWith("CPS", StringComparison.OrdinalIgnoreCase);
+                if (isDrugScreening)
+                {
+                    bgCheckReportForCsod.TypeOfBackgroundCheck = "Drug Screening";
+                }
+                else
+                {
+                    bgCheckReportForCsod.TypeOfBackgroundCheck = "Background Package";
+                }
+                //default status is in progress
+                var status = IntegrationOrderResultStatus.InProgress;
+                switch (package.ScreeningStatus.OrderStatus)
+                {
+                    case "Completed":
+                        status = IntegrationOrderResultStatus.Completed;
+                        break;
+                    case "InProgress":
+                        status = IntegrationOrderResultStatus.InProgress;
+                        break;
+                    case "Cancelled":
+                        status = IntegrationOrderResultStatus.Cancelled;
+                        break;
+                    case "Hold":
+                        status = IntegrationOrderResultStatus.InProgress;
+                        break;
+                    case "Disabled":
+                        status = IntegrationOrderResultStatus.InProgress;
+                        break;
+                    case "Preliminary":
+                        status = IntegrationOrderResultStatus.InProgress;
+                        break;
+                    case "Under Construction":
+                        status = IntegrationOrderResultStatus.Unknown;
+                        break;
+                    default:
+                        status = IntegrationOrderResultStatus.Unknown;
+                        break;
+                }
+
+                bgCheckReportForCsod.OrderStatus = Enum.GetName(status.GetType(), status);
+                bgCheckReportForCsod.CompletionDate = DateTimeOffset.UtcNow.ToString("MM-dd-yyyy");
+
+                string result = "";
+                if(status == IntegrationOrderResultStatus.Completed
+                    || status == IntegrationOrderResultStatus.Cancelled)
+                {
+                    string score = "";
+                    if (!string.IsNullOrWhiteSpace(package.ScreeningStatus.Score))
+                    {
+                        score = $" - {package.ScreeningStatus.Score}";
+                    }
+                    result = $"{package.ScreeningStatus.ResultStatus}{score}";
+                }
+                bgCheckReportForCsod.ScreeningResult = result;
+
+                //figure out the reporting url
+                //pretty sure this url we get from fadv doesn't expire until after the set expiration time by fadv
+                var recruiterEmail = package.PackageInformation[0].Quotebacks.First(x => x.Name.Equals("RecruiterEmail", StringComparison.OrdinalIgnoreCase)).Value;
+                string orderingAccount = (package.PackageInformation != null
+                                              && package.PackageInformation.Count > 0
+                                              && package.PackageInformation[0].OrderAccount != null
+                                              && package.PackageInformation[0].OrderAccount.Count > 0)
+                                              ? package.PackageInformation[0].OrderAccount[0].Account : null;
+                string reportUrl = package.ScreeningResults[0].InternetWebAddress;
+                //call fadv to get report url
+                var reportUrlFromFadv = this.GetReportUrl(package.ProviderReferenceId, recruiterEmail, orderingAccount);
+                if (!string.IsNullOrWhiteSpace(reportUrlFromFadv))
+                {
+                    reportUrl = reportUrlFromFadv;
+                }
+                bgCheckReportForCsod.ReportUrl = reportUrl;
+
+                //send this off to csod
+                using(var response = this.SendRequest(callbackDataFromEdge.CallbackUrl, "POST", JsonConvert.SerializeObject(bgCheckReportForCsod)))
+                {
+
+                }
+            }
         }
 
         public BackgroundCheckResponse InitiateBackgroundCheck(BackgroundCheckRequest request, string callbackUrl, string selectedAccountId, string selectedPackageId)
@@ -223,6 +318,11 @@ namespace csod_edge_integrations_custom_provider_service
             return accountsResponse.AccountDetails;
         }
 
+        public string GetReportUrl(string providerRefId, string recruiterEmail, string orderingAccount = null)
+        {
+
+        }
+
         public T ParseAndTypeResponseFromString<T>(string response)
         {
             T result = default(T);
@@ -279,6 +379,44 @@ namespace csod_edge_integrations_custom_provider_service
             }
 
             return result;
+        }
+
+        //used to send bgcheck report to csod
+        private HttpWebRequest BuildRequest(string url, string httpVerb)
+        {
+            HttpWebRequest webRequest = WebRequest.Create(new Uri(url)) as HttpWebRequest;
+            if (webRequest != null)
+            {
+                webRequest.Method = httpVerb;
+                webRequest.Accept = "application/json";
+                webRequest.ContentType = "application/json";
+
+                //uncomment once we find out what the correct basic auth to use is
+                //var credentialBuffer = new UTF8Encoding().GetBytes($"{_settings.Username}:{_settings.Password}");
+                //webRequest.Headers["Authorization"] = $"Basic {Convert.ToBase64String(credentialBuffer)}";
+
+                //add headers for edge callback manager to understand which corp is making the request
+                //webRequest.Headers["x-csod-edge"] = _settings.ClientId;
+            }
+            return webRequest;
+        }
+
+        //used to send bgcheck report to csod
+        private HttpWebResponse SendRequest(string url, string httpVerb, string body = null)
+        {
+            var request = BuildRequest(url, httpVerb);
+            if (body != null)
+            {
+                var data = Encoding.UTF8.GetBytes(body);
+                request.ContentLength = data.Length;
+
+                using (var s = request.GetRequestStream())
+                {
+                    s.Write(data, 0, data.Length);
+                }
+            }
+            var response = (HttpWebResponse)request.GetResponseAsync().Result;
+            return response;
         }
 
         private Telephone GetAvailableTelephoneNumber(ApplicantDataContactInfo contactInfo)

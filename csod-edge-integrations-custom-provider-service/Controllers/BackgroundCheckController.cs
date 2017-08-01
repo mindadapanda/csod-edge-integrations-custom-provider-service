@@ -53,7 +53,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             var settings = SettingsRepository.GetSettingsUsingUserId(userId);
 
             var manager = new FadvManager(settings);
-            var callbackUrl = this.GenerateCallback(request.CallbackData.CallbackUrl, 100);
+            var callbackUrl = this.GenerateCallback(request.CallbackData, request.CallbackData.CallbackUrl, 100);
 
             var delimiterIndex = request.SelectedPackageId.IndexOf(";");
             var accountId = request.SelectedPackageId.Substring(0, delimiterIndex);
@@ -64,7 +64,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             return Ok(response);
         }
 
-        private string GenerateCallback(string edgeCallbackUrl, int callbackLimit = 10)
+        private string GenerateCallback(CallbackData callbackDataFromCsod, string edgeCallbackUrl, int callbackLimit = 10)
         {
             var request = HttpContext.Request;
             if (request == null)
@@ -75,6 +75,10 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             {
                 throw new Exception("edge callback url cannot be empty string");
             }
+            if(callbackDataFromCsod == null)
+            {
+                throw new Exception("callback data is null");
+            }
             if (callbackLimit > 100 || callbackLimit <= 0)
             {
                 callbackLimit = 100;
@@ -84,6 +88,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             {
                 PublicId = publicId,
                 EdgeCallbackUrl = edgeCallbackUrl,
+                CallbackDataFromCsod = callbackDataFromCsod,
                 Limit = callbackLimit
             };
             CallbackRepository.CreateCallback(callback);
