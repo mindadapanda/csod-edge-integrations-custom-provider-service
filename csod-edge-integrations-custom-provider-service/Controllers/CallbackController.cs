@@ -31,7 +31,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         [HttpPost]
         public IActionResult CallbackEndpoint(Guid id)
         {
-            _logger.LogInformation("Callback recieved.");
+            _logger.LogDebug("Callback recieved.");
 
             var callbackFromRepo = CallbackRepository.GetCallbackByGuid(id);
             if(callbackFromRepo != null)
@@ -52,7 +52,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
 
                 var aonHewittClient = new AonHewittClient();
                 ApplicantScore applicantScore = null;
-                using (StreamReader reader = new StreamReader(Response.Body))
+                using (StreamReader reader = new StreamReader(Request.Body))
                 {
                     applicantScore = aonHewittClient.ParseApplicantScore(reader.ReadToEnd());
                 }

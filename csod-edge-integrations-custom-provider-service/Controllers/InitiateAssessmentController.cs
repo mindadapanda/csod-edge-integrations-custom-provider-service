@@ -10,6 +10,7 @@ using AonHewitt.Lib;
 using AonHewitt.Lib.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {
@@ -21,11 +22,13 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         SettingsRepository _settingsRepository;
         CallbackGenerator _callbackGenerator;
         Options _options;
-        public InitiateAssessmentController(SettingsRepository settingsRepository, CallbackGenerator callbackGenerator, IOptions<Options> options)
+        private readonly ILogger _logger;
+        public InitiateAssessmentController(SettingsRepository settingsRepository, CallbackGenerator callbackGenerator, IOptions<Options> options, ILogger<InitiateAssessmentController> logger)
         {
             _settingsRepository = settingsRepository;
             _callbackGenerator = callbackGenerator;
             _options = options.Value;
+            _logger = logger;
         }
 
         public IActionResult Post([FromBody]InitiateAssessment request)
@@ -35,6 +38,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             var userId = User.GetUserId();
             var settings = _settingsRepository.GetSettingsUsingHashCode(userId);
 
+            _logger.LogDebug("Initiate assessment called for user {0}", userId);
 
             var aonHewittSettings = new AonHewittSettings()
             {
@@ -49,10 +53,14 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 var callbackGuid = _callbackGenerator.GenerateCallback(request.CallbackUrl);
                 var callbackUrl = string.Format("{0}?id={1}", _options.BaseCallbackUrl, callbackGuid);
 
+                _logger.LogDebug("Callback URL generated: {0}", callbackUrl);
+
                 var aonHewittClient = new AonHewittClient();
 
                 var body = aonHewittClient.CreateRegisterCandidateRequestBody(aonHewittSettings.VendorCode, aonHewittSettings.ClientId, request.AssessmentId, request.TrackingId, callbackUrl);
                 var result = aonHewittClient.SubmitReqest(aonHewittSettings.ServiceBaseUrl, RequestMethod.POST, body);
+
+                _logger.LogDebug("Request submitted to Aon with results {0}", result);
 
                 Serializer serializer = new Serializer();
 
