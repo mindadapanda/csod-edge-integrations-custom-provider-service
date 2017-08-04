@@ -31,14 +31,14 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             _logger = logger;
         }
 
-        public IActionResult Post([FromBody]InitiateAssessment request)
+        public IActionResult Post([FromBody]InitiateAssessment order)
         {
             InitiateAssessmentResponse response = null;
 
             var userId = User.GetUserId();
             var settings = _settingsRepository.GetSettingsUsingHashCode(userId);
 
-            _logger.LogDebug("Initiate assessment called for user {0}", userId);
+            _logger.LogInformation("Initiate assessment called for user {0}", userId);
 
             var aonHewittSettings = new AonHewittSettings()
             {
@@ -50,17 +50,17 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             string message = "Unknown Error";
             if (settings != null)
             {
-                var callbackGuid = _callbackGenerator.GenerateCallback(request.CallbackUrl);
-                var callbackUrl = string.Format("{0}?id={1}", _options.BaseCallbackUrl, callbackGuid);
+                var callbackId = _callbackGenerator.GenerateCallback(order.CallbackUrl);
+                var callbackUrl = $"{Request.Scheme}://{Request.Host.ToUriComponent()}{Request.PathBase.ToUriComponent()}/api/callback/{callbackId}";
 
-                _logger.LogDebug("Callback URL generated: {0}", callbackUrl);
+                _logger.LogInformation("Callback URL generated: {0}", callbackUrl);
 
                 var aonHewittClient = new AonHewittClient();
 
-                var body = aonHewittClient.CreateRegisterCandidateRequestBody(aonHewittSettings.VendorCode, aonHewittSettings.ClientId, request.AssessmentId, request.TrackingId, callbackUrl);
+                var body = aonHewittClient.CreateRegisterCandidateRequestBody(aonHewittSettings.VendorCode, aonHewittSettings.ClientId, order.AssessmentId, order.TrackingId, callbackUrl);
                 var result = aonHewittClient.SubmitReqest(aonHewittSettings.ServiceBaseUrl, RequestMethod.POST, body);
 
-                _logger.LogDebug("Request submitted to Aon with results {0}", result);
+                _logger.LogInformation("Request submitted to Aon with results {0}", result);
 
                 Serializer serializer = new Serializer();
 

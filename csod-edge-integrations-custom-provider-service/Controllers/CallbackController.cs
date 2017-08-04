@@ -31,7 +31,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         [HttpPost]
         public IActionResult CallbackEndpoint(Guid id)
         {
-            _logger.LogDebug("Callback recieved.");
+            _logger.LogInformation("Callback recieved");
 
             var callbackFromRepo = CallbackRepository.GetCallbackByGuid(id);
             if(callbackFromRepo != null)
@@ -49,16 +49,17 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 //don't modify we're going to decrement the limit by 1
                 CallbackRepository.DecrementCallbackLimit(callbackFromRepo.Id);
 
-
                 var aonHewittClient = new AonHewittClient();
                 ApplicantScore applicantScore = null;
                 using (StreamReader reader = new StreamReader(Request.Body))
                 {
-                    applicantScore = aonHewittClient.ParseApplicantScore(reader.ReadToEnd());
+                    var content = reader.ReadToEnd();
+                    applicantScore = aonHewittClient.ParseApplicantScore(content);
+                    _logger.LogInformation("Callback response {0}", content);
                 }
 
                 if (applicantScore != null)
-                {
+                {                    
                     bool isPassed = applicantScore.Pass.Equals("true", StringComparison.OrdinalIgnoreCase) || applicantScore.Pass.Equals("1", StringComparison.OrdinalIgnoreCase) ? true : false;
                     string band = aonHewittClient.GetResourceKeyFromAonBandEnumerator(applicantScore.Band);
 
@@ -68,19 +69,29 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                         Score = applicantScore.Score,
                         Comments = band,
                         DetailsUrl = applicantScore.TextDescription
-                    };
+                    };                    
 
-                    var client = new RestClient();
-                    var request = new RestRequest(callbackFromRepo.EdgeCallbackUrl, Method.POST);
+                    var callbackMapper = new CallbackMapper();
+                    Uri callbackUri = new Uri(callbackMapper.RemapCallback(callbackFromRepo.EdgeCallbackUrl));
+
+                    _logger.LogInformation("Sending callback results to {0} remapped to {1}", callbackFromRepo.EdgeCallbackUrl, callbackUri);
+
+                    var client = new RestClient(callbackUri);                    
+                    var request = new RestRequest(Method.POST);
+
                     request.AddHeader("x-csod-edge-api-key", "PW9totT67fiz87tNMoR2yoncF/M=");
                     request.AddJsonBody(result);
 
                     client.ExecuteAsync(request, x =>
                     {
-                       if(x.StatusCode != System.Net.HttpStatusCode.OK)
+                        if (x.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            _logger.LogInformation("Successfully sent callback results back to edge!");
+                        }
+                        else
                         {
                             _logger.LogInformation("Error sending callback results back to edge.");
-                        };
+                        }
                     });
                 }
                

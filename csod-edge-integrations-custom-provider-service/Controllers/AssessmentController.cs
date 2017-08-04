@@ -27,7 +27,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
 
         public IActionResult Get()
         {
-            _logger.LogTrace("Get assessment request.");
+            _logger.LogInformation("Get assessment request.");
             var userId = User.GetUserId();
             var settings = _settingsRepository.GetSettingsUsingHashCode(userId);
 
