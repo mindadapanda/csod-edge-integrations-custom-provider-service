@@ -21,13 +21,11 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
     {
         SettingsRepository _settingsRepository;
         CallbackGenerator _callbackGenerator;
-        Options _options;
         private readonly ILogger _logger;
-        public InitiateAssessmentController(SettingsRepository settingsRepository, CallbackGenerator callbackGenerator, IOptions<Options> options, ILogger<InitiateAssessmentController> logger)
+        public InitiateAssessmentController(SettingsRepository settingsRepository, CallbackGenerator callbackGenerator, ILogger<InitiateAssessmentController> logger)
         {
             _settingsRepository = settingsRepository;
             _callbackGenerator = callbackGenerator;
-            _options = options.Value;
             _logger = logger;
         }
 

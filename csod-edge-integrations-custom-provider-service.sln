@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "csod-edge-integrations-custom-provider-service", "csod-edge-integrations-custom-provider-service\csod-edge-integrations-custom-provider-service.csproj", "{F7F4D3ED-7D92-4BC0-9B87-D518F3FC97FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AonHewitt.Lib", "AonHewitt.Lib\AonHewitt.Lib.csproj", "{F4F12DDC-B555-4D6F-9C67-EA17AC5D038C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AonHewitt.Lib", "AonHewitt.Lib\AonHewitt.Lib.csproj", "{17BEC2C3-15C8-4600-9110-3ECD51F9CD91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{F7F4D3ED-7D92-4BC0-9B87-D518F3FC97FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7F4D3ED-7D92-4BC0-9B87-D518F3FC97FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7F4D3ED-7D92-4BC0-9B87-D518F3FC97FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F4F12DDC-B555-4D6F-9C67-EA17AC5D038C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F4F12DDC-B555-4D6F-9C67-EA17AC5D038C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F4F12DDC-B555-4D6F-9C67-EA17AC5D038C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F4F12DDC-B555-4D6F-9C67-EA17AC5D038C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17BEC2C3-15C8-4600-9110-3ECD51F9CD91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17BEC2C3-15C8-4600-9110-3ECD51F9CD91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17BEC2C3-15C8-4600-9110-3ECD51F9CD91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17BEC2C3-15C8-4600-9110-3ECD51F9CD91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
