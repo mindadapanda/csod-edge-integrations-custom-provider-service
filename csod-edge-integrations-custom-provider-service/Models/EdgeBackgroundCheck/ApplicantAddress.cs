@@ -36,18 +36,18 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
     /// 
     /// </summary>
     [DataContract]
-    public partial class ApplicantDataAddress :  IEquatable<ApplicantDataAddress>
+    public partial class ApplicantAddress : IEquatable<ApplicantAddress>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicantDataAddress" /> class.
+        /// Initializes a new instance of the <see cref="ApplicantAddress" /> class.
         /// </summary>
         /// <param name="AddressLine1">address.</param>
         /// <param name="AddressLine2">address continued.</param>
         /// <param name="AddressCity">city.</param>
         /// <param name="AddressState">state or province.</param>
         /// <param name="AddressPostalZipCode">zip code.</param>
-        /// <param name="AddressCountryCode">country code in 2 letters.</param>
-        public ApplicantDataAddress(string AddressLine1 = null, string AddressLine2 = null, string AddressCity = null, string AddressState = null, string AddressPostalZipCode = null, string AddressCountryCode = null)
+        /// <param name="AddressCountryCode">country code in 3 letters.</param>
+        public ApplicantAddress(string AddressLine1 = null, string AddressLine2 = null, string AddressCity = null, string AddressState = null, string AddressPostalZipCode = null, string AddressCountryCode = null)
         {
             this.AddressLine1 = AddressLine1;
             this.AddressLine2 = AddressLine2;
@@ -55,49 +55,49 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             this.AddressState = AddressState;
             this.AddressPostalZipCode = AddressPostalZipCode;
             this.AddressCountryCode = AddressCountryCode;
-            
+
         }
 
         /// <summary>
         /// address
         /// </summary>
         /// <value>address</value>
-        [DataMember(Name="addressLine1")]
+        [DataMember(Name = "addressLine1")]
         public string AddressLine1 { get; set; }
 
         /// <summary>
         /// address continued
         /// </summary>
         /// <value>address continued</value>
-        [DataMember(Name="addressLine2")]
+        [DataMember(Name = "addressLine2")]
         public string AddressLine2 { get; set; }
 
         /// <summary>
         /// city
         /// </summary>
         /// <value>city</value>
-        [DataMember(Name="addressCity")]
+        [DataMember(Name = "addressCity")]
         public string AddressCity { get; set; }
 
         /// <summary>
         /// state or province
         /// </summary>
         /// <value>state or province</value>
-        [DataMember(Name="addressState")]
+        [DataMember(Name = "addressState")]
         public string AddressState { get; set; }
 
         /// <summary>
         /// zip code
         /// </summary>
         /// <value>zip code</value>
-        [DataMember(Name="addressPostalZipCode")]
+        [DataMember(Name = "addressPostalZipCode")]
         public string AddressPostalZipCode { get; set; }
 
         /// <summary>
-        /// country code in 2 letters
+        /// country code in 3 letters
         /// </summary>
-        /// <value>country code in 2 letters</value>
-        [DataMember(Name="addressCountryCode")]
+        /// <value>country code in 3 letters</value>
+        [DataMember(Name = "addressCountryCode")]
         public string AddressCountryCode { get; set; }
 
 
@@ -108,7 +108,7 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class ApplicantDataAddress {\n");
+            sb.Append("class ApplicantAddress {\n");
             sb.Append("  AddressLine1: ").Append(AddressLine1).Append("\n");
             sb.Append("  AddressLine2: ").Append(AddressLine2).Append("\n");
             sb.Append("  AddressCity: ").Append(AddressCity).Append("\n");
@@ -138,46 +138,46 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ApplicantDataAddress)obj);
+            return Equals((ApplicantAddress)obj);
         }
 
         /// <summary>
-        /// Returns true if ApplicantDataAddress instances are equal
+        /// Returns true if ApplicantAddress instances are equal
         /// </summary>
-        /// <param name="other">Instance of ApplicantDataAddress to be compared</param>
+        /// <param name="other">Instance of ApplicantAddress to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(ApplicantDataAddress other)
+        public bool Equals(ApplicantAddress other)
         {
 
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     this.AddressLine1 == other.AddressLine1 ||
                     this.AddressLine1 != null &&
                     this.AddressLine1.Equals(other.AddressLine1)
-                ) && 
+                ) &&
                 (
                     this.AddressLine2 == other.AddressLine2 ||
                     this.AddressLine2 != null &&
                     this.AddressLine2.Equals(other.AddressLine2)
-                ) && 
+                ) &&
                 (
                     this.AddressCity == other.AddressCity ||
                     this.AddressCity != null &&
                     this.AddressCity.Equals(other.AddressCity)
-                ) && 
+                ) &&
                 (
                     this.AddressState == other.AddressState ||
                     this.AddressState != null &&
                     this.AddressState.Equals(other.AddressState)
-                ) && 
+                ) &&
                 (
                     this.AddressPostalZipCode == other.AddressPostalZipCode ||
                     this.AddressPostalZipCode != null &&
                     this.AddressPostalZipCode.Equals(other.AddressPostalZipCode)
-                ) && 
+                ) &&
                 (
                     this.AddressCountryCode == other.AddressCountryCode ||
                     this.AddressCountryCode != null &&
@@ -214,12 +214,12 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
 
         #region Operators
 
-        public static bool operator ==(ApplicantDataAddress left, ApplicantDataAddress right)
+        public static bool operator ==(ApplicantAddress left, ApplicantAddress right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(ApplicantDataAddress left, ApplicantDataAddress right)
+        public static bool operator !=(ApplicantAddress left, ApplicantAddress right)
         {
             return !Equals(left, right);
         }

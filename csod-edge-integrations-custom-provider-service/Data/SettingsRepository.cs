@@ -9,7 +9,7 @@ namespace csod_edge_integrations_custom_provider_service.Data
 {
     public class SettingsRepository
     {
-        protected LiteRepository Repository { get; set; }
+        protected LiteRepository Repository;
 
         public SettingsRepository(LiteRepository repository)
         {

@@ -47,10 +47,11 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
         /// <param name="NamePrefix">prefix.</param>
         /// <param name="NameSuffix">suffix.</param>
         /// <param name="RecruiterEmail">email of the person requesting the background check.</param>
+        /// <param name="OrganizationUnit">OrganizationUnit.</param>
         /// <param name="ContactInfo">ContactInfo.</param>
         /// <param name="Address">Address.</param>
         /// <param name="Resume">Resume.</param>
-        public ApplicantData(string FirstName = null, string LastName = null, string MiddleName = null, string NamePrefix = null, string NameSuffix = null, string RecruiterEmail = null, ApplicantDataContactInfo ContactInfo = null, ApplicantDataAddress Address = null, ApplicantDataResume Resume = null)
+        public ApplicantData(string FirstName = null, string LastName = null, string MiddleName = null, string NamePrefix = null, string NameSuffix = null, string RecruiterEmail = null, OrganizationUnit OrganizationUnit = null, ApplicantContactInfo ContactInfo = null, ApplicantAddress Address = null, ApplicantResume Resume = null)
         {
             // to ensure "FirstName" is required (not null)
             if (FirstName == null)
@@ -74,6 +75,7 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             this.NamePrefix = NamePrefix;
             this.NameSuffix = NameSuffix;
             this.RecruiterEmail = RecruiterEmail;
+            this.OrganizationUnit = OrganizationUnit;
             this.ContactInfo = ContactInfo;
             this.Address = Address;
             this.Resume = Resume;
@@ -120,22 +122,28 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
         public string RecruiterEmail { get; set; }
 
         /// <summary>
+        /// Gets or Sets OrganizationUnit
+        /// </summary>
+        [DataMember(Name = "organizationUnit")]
+        public OrganizationUnit OrganizationUnit { get; set; }
+
+        /// <summary>
         /// Gets or Sets ContactInfo
         /// </summary>
         [DataMember(Name = "contactInfo")]
-        public ApplicantDataContactInfo ContactInfo { get; set; }
+        public ApplicantContactInfo ContactInfo { get; set; }
 
         /// <summary>
         /// Gets or Sets Address
         /// </summary>
         [DataMember(Name = "address")]
-        public ApplicantDataAddress Address { get; set; }
+        public ApplicantAddress Address { get; set; }
 
         /// <summary>
         /// Gets or Sets Resume
         /// </summary>
         [DataMember(Name = "resume")]
-        public ApplicantDataResume Resume { get; set; }
+        public ApplicantResume Resume { get; set; }
 
 
         /// <summary>
@@ -152,6 +160,7 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             sb.Append("  NamePrefix: ").Append(NamePrefix).Append("\n");
             sb.Append("  NameSuffix: ").Append(NameSuffix).Append("\n");
             sb.Append("  RecruiterEmail: ").Append(RecruiterEmail).Append("\n");
+            sb.Append("  OrganizationUnit: ").Append(OrganizationUnit).Append("\n");
             sb.Append("  ContactInfo: ").Append(ContactInfo).Append("\n");
             sb.Append("  Address: ").Append(Address).Append("\n");
             sb.Append("  Resume: ").Append(Resume).Append("\n");
@@ -224,6 +233,11 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
                     this.RecruiterEmail.Equals(other.RecruiterEmail)
                 ) &&
                 (
+                    this.OrganizationUnit == other.OrganizationUnit ||
+                    this.OrganizationUnit != null &&
+                    this.OrganizationUnit.Equals(other.OrganizationUnit)
+                ) &&
+                (
                     this.ContactInfo == other.ContactInfo ||
                     this.ContactInfo != null &&
                     this.ContactInfo.Equals(other.ContactInfo)
@@ -263,6 +277,8 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
                     hash = hash * 59 + this.NameSuffix.GetHashCode();
                 if (this.RecruiterEmail != null)
                     hash = hash * 59 + this.RecruiterEmail.GetHashCode();
+                if (this.OrganizationUnit != null)
+                    hash = hash * 59 + this.OrganizationUnit.GetHashCode();
                 if (this.ContactInfo != null)
                     hash = hash * 59 + this.ContactInfo.GetHashCode();
                 if (this.Address != null)

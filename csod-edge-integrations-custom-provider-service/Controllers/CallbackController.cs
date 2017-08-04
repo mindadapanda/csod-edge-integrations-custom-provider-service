@@ -16,9 +16,12 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
     {
         protected CallbackRepository CallbackRepository;
         protected SettingsRepository SettingsRepository;
-        public CallbackController(CallbackRepository callbackRepository, SettingsRepository settingsRepository)
+        protected BackgroundCheckDebugRepository DebugRepository;
+        public CallbackController(CallbackRepository callbackRepository, SettingsRepository settingsRepository, BackgroundCheckDebugRepository debugRepository)
         {
             CallbackRepository = callbackRepository;
+            SettingsRepository = settingsRepository;
+            DebugRepository = debugRepository;
         }
 
         [Route("api/callback/{id}")]
@@ -57,6 +60,12 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 if (string.IsNullOrWhiteSpace(body))
                 {
                     return BadRequest();
+                }
+                //add to debug data
+                var debugData = DebugRepository.GetUsingCallbackGuid(id);
+                if(debugData != null)
+                {
+                    DebugRepository.AddResponseFromFadv(id, body);
                 }
                 
                 manager.ProcessCallback(body, callbackData.CallbackDataFromCsod);

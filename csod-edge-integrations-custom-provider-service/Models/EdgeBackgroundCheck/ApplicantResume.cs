@@ -36,38 +36,38 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
     /// 
     /// </summary>
     [DataContract]
-    public partial class ApplicantDataResume :  IEquatable<ApplicantDataResume>
+    public partial class ApplicantResume : IEquatable<ApplicantResume>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicantDataResume" /> class.
+        /// Initializes a new instance of the <see cref="ApplicantResume" /> class.
         /// </summary>
         /// <param name="ProfessionalExperiences">ProfessionalExperiences.</param>
         /// <param name="Educations">Educations.</param>
         /// <param name="Certifications">Certifications.</param>
-        public ApplicantDataResume(List<ProfessionalExperience> ProfessionalExperiences = null, List<Education> Educations = null, List<Certification> Certifications = null)
+        public ApplicantResume(List<ProfessionalExperience> ProfessionalExperiences = null, List<Education> Educations = null, List<Certification> Certifications = null)
         {
             this.ProfessionalExperiences = ProfessionalExperiences;
             this.Educations = Educations;
             this.Certifications = Certifications;
-            
+
         }
 
         /// <summary>
         /// Gets or Sets ProfessionalExperiences
         /// </summary>
-        [DataMember(Name="professionalExperiences")]
+        [DataMember(Name = "professionalExperiences")]
         public List<ProfessionalExperience> ProfessionalExperiences { get; set; }
 
         /// <summary>
         /// Gets or Sets Educations
         /// </summary>
-        [DataMember(Name="educations")]
+        [DataMember(Name = "educations")]
         public List<Education> Educations { get; set; }
 
         /// <summary>
         /// Gets or Sets Certifications
         /// </summary>
-        [DataMember(Name="certifications")]
+        [DataMember(Name = "certifications")]
         public List<Certification> Certifications { get; set; }
 
 
@@ -78,7 +78,7 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class ApplicantDataResume {\n");
+            sb.Append("class ApplicantResume {\n");
             sb.Append("  ProfessionalExperiences: ").Append(ProfessionalExperiences).Append("\n");
             sb.Append("  Educations: ").Append(Educations).Append("\n");
             sb.Append("  Certifications: ").Append(Certifications).Append("\n");
@@ -105,31 +105,31 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ApplicantDataResume)obj);
+            return Equals((ApplicantResume)obj);
         }
 
         /// <summary>
-        /// Returns true if ApplicantDataResume instances are equal
+        /// Returns true if ApplicantResume instances are equal
         /// </summary>
-        /// <param name="other">Instance of ApplicantDataResume to be compared</param>
+        /// <param name="other">Instance of ApplicantResume to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(ApplicantDataResume other)
+        public bool Equals(ApplicantResume other)
         {
 
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     this.ProfessionalExperiences == other.ProfessionalExperiences ||
                     this.ProfessionalExperiences != null &&
                     this.ProfessionalExperiences.SequenceEqual(other.ProfessionalExperiences)
-                ) && 
+                ) &&
                 (
                     this.Educations == other.Educations ||
                     this.Educations != null &&
                     this.Educations.SequenceEqual(other.Educations)
-                ) && 
+                ) &&
                 (
                     this.Certifications == other.Certifications ||
                     this.Certifications != null &&
@@ -160,12 +160,12 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
 
         #region Operators
 
-        public static bool operator ==(ApplicantDataResume left, ApplicantDataResume right)
+        public static bool operator ==(ApplicantResume left, ApplicantResume right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(ApplicantDataResume left, ApplicantDataResume right)
+        public static bool operator !=(ApplicantResume left, ApplicantResume right)
         {
             return !Equals(left, right);
         }

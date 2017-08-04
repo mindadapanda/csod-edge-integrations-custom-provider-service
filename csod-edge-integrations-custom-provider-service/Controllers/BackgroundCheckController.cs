@@ -19,10 +19,12 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
     {
         protected SettingsRepository SettingsRepository;
         protected CallbackRepository CallbackRepository;
-        public BackgroundCheckController(SettingsRepository settingsRepository, CallbackRepository callbackRepository)
+        protected BackgroundCheckDebugRepository DebugRepository;
+        public BackgroundCheckController(SettingsRepository settingsRepository, CallbackRepository callbackRepository, BackgroundCheckDebugRepository debugRepository)
         {
             SettingsRepository = settingsRepository;
             CallbackRepository = callbackRepository;
+            DebugRepository = debugRepository;
         }
 
         [Route("api/packages")]
@@ -52,19 +54,19 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             var userId = int.Parse(currentUser.Claims.First(x => x.Type.Equals("id", StringComparison.CurrentCultureIgnoreCase)).Value);
             var settings = SettingsRepository.GetSettingsUsingUserId(userId);
 
-            var manager = new FadvManager(settings);
-            var callbackUrl = this.GenerateCallback(request.CallbackData, request.CallbackData.CallbackUrl, 100);
+            var manager = new FadvManager(settings, DebugRepository);
+            var callback = this.GenerateCallback(request.CallbackData, userId, request.CallbackData.CallbackUrl, 100);
 
             var delimiterIndex = request.SelectedPackageId.IndexOf(";", StringComparison.OrdinalIgnoreCase);
             var accountId = request.SelectedPackageId.Substring(0, delimiterIndex);
             var packageId = request.SelectedPackageId.Substring(delimiterIndex + 1);
 
-            var response = manager.InitiateBackgroundCheck(request, callbackUrl, accountId, packageId);
+            var response = manager.InitiateBackgroundCheck(request, callback, accountId, packageId);
 
             return Ok(response);
         }
 
-        private string GenerateCallback(CallbackData callbackDataFromCsod, string edgeCallbackUrl, int callbackLimit = 10)
+        private Callback GenerateCallback(CallbackData callbackDataFromCsod, int userId, string edgeCallbackUrl, int callbackLimit = 10)
         {
             var request = HttpContext.Request;
             if (request == null)
@@ -79,22 +81,28 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             {
                 throw new Exception("callback data is null");
             }
+            if(userId <= 0)
+            {
+                throw new Exception("userId cannot be 0 or negative");
+            }
             if (callbackLimit > 100 || callbackLimit <= 0)
             {
                 callbackLimit = 100;
             }
             var publicId = Guid.NewGuid();
+            var callbackUrl = $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}/api/callback/{publicId}";
             var callback = new Callback()
             {
                 PublicId = publicId,
+                UserId = userId,
+                GeneratedCallbackUrl = callbackUrl,
                 EdgeCallbackUrl = edgeCallbackUrl,
                 CallbackDataFromCsod = callbackDataFromCsod,
                 Limit = callbackLimit
             };
             CallbackRepository.CreateCallback(callback);
 
-            var callbackUrl = $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}/api/callback/{publicId}";
-            return callbackUrl;
+            return callback;
         }
 
     }

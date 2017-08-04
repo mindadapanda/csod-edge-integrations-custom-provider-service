@@ -1,4 +1,5 @@
-﻿using csod_edge_integrations_custom_provider_service.Models;
+﻿using csod_edge_integrations_custom_provider_service.Data;
+using csod_edge_integrations_custom_provider_service.Models;
 using csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCheck;
 using csod_edge_integrations_custom_provider_service.Models.Fadv;
 using Newtonsoft.Json;
@@ -17,21 +18,22 @@ namespace csod_edge_integrations_custom_provider_service
     public class FadvManager
     {
         protected Settings Settings;
-
-        public FadvManager(Settings settings)
+        protected BackgroundCheckDebugRepository DebugRepository;
+        public FadvManager(Settings settings, BackgroundCheckDebugRepository debugRepository = null)
         {
             Settings = settings;
+            DebugRepository = debugRepository;
         }
 
         public void ProcessCallback(string payload, CallbackData callbackDataFromEdge)
         {
             var bgCheckReports = this.ParseAndTypeResponseFromString<BackgroundReports>(payload);
             //to do: add logging
-            if(bgCheckReports == null)
+            if (bgCheckReports == null)
             {
                 throw new Exception("Received Null Background Check Report");
             }
-            foreach(var package in bgCheckReports.BackgroundReportPackage)
+            foreach (var package in bgCheckReports.BackgroundReportPackage)
             {
                 var bgCheckReportForCsod = new BackgroundCheckReport();
                 bgCheckReportForCsod.CallbackData = callbackDataFromEdge;
@@ -80,7 +82,7 @@ namespace csod_edge_integrations_custom_provider_service
                 bgCheckReportForCsod.CompletionDate = DateTimeOffset.UtcNow.ToString("MM-dd-yyyy");
 
                 string result = "";
-                if(status == IntegrationOrderResultStatus.Completed
+                if (status == IntegrationOrderResultStatus.Completed
                     || status == IntegrationOrderResultStatus.Cancelled)
                 {
                     string score = "";
@@ -120,7 +122,7 @@ namespace csod_edge_integrations_custom_provider_service
                 //    if(response != null){
                 //        //log anything that isn't a statuscode ok
                 //        if(response.StatusCode != HttpStatusCode.OK){
-                            
+
                 //        }
                 //    }
                 //    //maybe do some logging for null or bad responses from csod
@@ -128,7 +130,7 @@ namespace csod_edge_integrations_custom_provider_service
             }
         }
 
-        public BackgroundCheckResponse InitiateBackgroundCheck(BackgroundCheckRequest request, string callbackUrl, string selectedAccountId, string selectedPackageId)
+        public BackgroundCheckResponse InitiateBackgroundCheck(BackgroundCheckRequest request, Callback callback, string selectedAccountId, string selectedPackageId)
         {
             var invitation = new CandidateInvitations();
             invitation.Account = Settings.Account;
@@ -146,6 +148,38 @@ namespace csod_edge_integrations_custom_provider_service
             {
                 Name = "ref",
                 Value = request.CallbackData.ApplicantRefId
+            });
+            invitation.CandidateInvitation.UserDefinedFields = new UserDefinedFields();
+            invitation.CandidateInvitation.UserDefinedFields.UserDefinedField = new List<UserDefinedField>();
+            invitation.CandidateInvitation.UserDefinedFields.UserDefinedField.Add(new UserDefinedField()
+            {
+                Name = "Division",
+                Value = request.ApplicantData.OrganizationUnit.Division
+            });
+            invitation.CandidateInvitation.UserDefinedFields.UserDefinedField.Add(new UserDefinedField()
+            {
+                Name = "Location",
+                Value = request.ApplicantData.OrganizationUnit.Location.Name
+            });
+            invitation.CandidateInvitation.UserDefinedFields.UserDefinedField.Add(new UserDefinedField()
+            {
+                Name = "Ref",
+                Value = request.ApplicantData.OrganizationUnit.Location.Ref
+            });
+            invitation.CandidateInvitation.UserDefinedFields.UserDefinedField.Add(new UserDefinedField()
+            {
+                Name = "Cost Center",
+                Value = request.ApplicantData.OrganizationUnit.CostCenter
+            });
+            invitation.CandidateInvitation.UserDefinedFields.UserDefinedField.Add(new UserDefinedField()
+            {
+                Name = "Position",
+                Value = request.ApplicantData.OrganizationUnit.Position
+            });
+            invitation.CandidateInvitation.UserDefinedFields.UserDefinedField.Add(new UserDefinedField()
+            {
+                Name = "Grade",
+                Value = request.ApplicantData.OrganizationUnit.Grade
             });
             invitation.CandidateInvitation.Quotebacks = new Quotebacks();
             invitation.CandidateInvitation.Quotebacks.Quoteback = new List<Quoteback>();
@@ -165,8 +199,8 @@ namespace csod_edge_integrations_custom_provider_service
                 Value = request.CallbackData.ApplicantRefUserId
             });
             //to do: not sure if we need to add recruiter email
-            invitation.CandidateInvitation.CandidateStatusNotificationUrl = callbackUrl;
-            invitation.CandidateInvitation.CaseNotificationUrl = callbackUrl;
+            invitation.CandidateInvitation.CandidateStatusNotificationUrl = callback.GeneratedCallbackUrl;
+            invitation.CandidateInvitation.CaseNotificationUrl = callback.GeneratedCallbackUrl;
             invitation.CandidateInvitation.RequestingAccount = new RequestingAccount();
             invitation.CandidateInvitation.RequestingAccount.Account = selectedAccountId;
             invitation.CandidateInvitation.RequestingAccount.UserId = request.ApplicantData.RecruiterEmail;
@@ -205,7 +239,7 @@ namespace csod_edge_integrations_custom_provider_service
             invitation.CandidateInvitation.PersonalData.EEOC = new Eeoc();
             invitation.CandidateInvitation.PersonalData.EmploymentHistory = new EmploymentHistory();
             invitation.CandidateInvitation.PersonalData.EmploymentHistory.Employer = new List<Employer>();
-            foreach(var employment in request.ApplicantData.Resume.ProfessionalExperiences)
+            foreach (var employment in request.ApplicantData.Resume.ProfessionalExperiences)
             {
                 invitation.CandidateInvitation.PersonalData.EmploymentHistory.Employer.Add(new Employer()
                 {
@@ -223,7 +257,7 @@ namespace csod_edge_integrations_custom_provider_service
             }
             invitation.CandidateInvitation.PersonalData.EducationHistory = new EducationHistory();
             invitation.CandidateInvitation.PersonalData.EducationHistory.SchoolOrInstitution = new List<SchoolOrInstitution>();
-            foreach(var school in request.ApplicantData.Resume.Educations)
+            foreach (var school in request.ApplicantData.Resume.Educations)
             {
                 invitation.CandidateInvitation.PersonalData.EducationHistory.SchoolOrInstitution.Add(new SchoolOrInstitution()
                 {
@@ -243,7 +277,7 @@ namespace csod_edge_integrations_custom_provider_service
             }
             invitation.CandidateInvitation.PersonalData.Licenses = new Licenses();
             invitation.CandidateInvitation.PersonalData.Licenses.licenses = new List<License>();
-            foreach(var license in request.ApplicantData.Resume.Certifications)
+            foreach (var license in request.ApplicantData.Resume.Certifications)
             {
                 invitation.CandidateInvitation.PersonalData.Licenses.licenses.Add(new License()
                 {
@@ -259,11 +293,12 @@ namespace csod_edge_integrations_custom_provider_service
             invitation.CandidateInvitation.ExpectedCompensation = new ExpectedCompensation();
             invitation.CandidateInvitation.BackgroundSearchPackageId = selectedPackageId;
 
-            var response = SendRequest(Settings.InviteUrl, invitation);
-            var result = ParseAndTypeResponseFromString<CandidateReports>(response.Result);
+            var response = SendRequest(Settings.InviteUrl, invitation, callback).Result;
+            var result = ParseAndTypeResponseFromString<CandidateReports>(response);
+
 
             //check for errors and etc to send back
-            var bgCheckResponse = new BackgroundCheckResponse();
+            var bgCheckResponse = new BackgroundCheckResponse(false);
 
             if (result.Items[0].ApplicationStatus.Contains("Fail"))
             {
@@ -274,10 +309,6 @@ namespace csod_edge_integrations_custom_provider_service
                     Description = result.Items[0].Error.ErrorDescription
                 });
             }
-            else
-            {
-                bgCheckResponse.HasErrors = false;
-            }
 
             return bgCheckResponse;
         }
@@ -287,7 +318,7 @@ namespace csod_edge_integrations_custom_provider_service
             var packages = new List<BackgroundCheckPackage>();
             //get the accounts first
             var accounts = this.GetAccounts();
-            foreach(var account in accounts)
+            foreach (var account in accounts)
             {
                 var request = new ChoicePointAdminRequest()
                 {
@@ -303,7 +334,7 @@ namespace csod_edge_integrations_custom_provider_service
                 var response = SendRequest(Settings.AdminUrl, request);
                 var packagesForAccount = ParseAndTypeResponseFromString<ChoicePointAdminResponse>(response.Result);
 
-                foreach(var package in packagesForAccount.PackageDetails)
+                foreach (var package in packagesForAccount.PackageDetails)
                 {
                     var bgPackage = new BackgroundCheckPackage($"{account.AccountId};{package.PackageId}", $"{account.AccountName} // {package.Name}");
                     packages.Add(bgPackage);
@@ -359,7 +390,7 @@ namespace csod_edge_integrations_custom_provider_service
             return result;
         }
 
-        private async Task<string> SendRequest<TFadvModel>(string url, TFadvModel model)
+        private async Task<string> SendRequest<TFadvModel>(string url, TFadvModel model, Callback callback = null)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Headers["XML"] = url; //.Headers.("XML", url);
@@ -404,6 +435,17 @@ namespace csod_edge_integrations_custom_provider_service
                 result = sr.ReadToEnd();
             }
 
+            //store all debug data if debug repo is not null the callback supplied is not null because only initiate uses it right now
+            if (DebugRepository != null && callback != null)
+            {
+                var debugData = new BackgroundCheckDebugData();
+                debugData.CallbackGuid = callback.PublicId;
+                debugData.BackgroundCheckRequestToFadvRawXml = doc.InnerXml;
+                debugData.BackgroundCheckResponseFromFadvRawXml = result;
+
+                DebugRepository.Create(debugData);
+            }
+
             return result;
         }
 
@@ -422,7 +464,7 @@ namespace csod_edge_integrations_custom_provider_service
                 //webRequest.Headers["Authorization"] = $"Basic {Convert.ToBase64String(credentialBuffer)}";
 
                 //add headers for edge callback manager to understand which corp is making the request
-                //webRequest.Headers["x-csod-edge"] = _settings.ClientId;
+                webRequest.Headers["x-csod-edge-api-key"] = "yhOQEP3H4VE00lYd9OYWvCliaiI=";
             }
             return webRequest;
         }
@@ -445,7 +487,7 @@ namespace csod_edge_integrations_custom_provider_service
             return response;
         }
 
-        private Telephone GetAvailableTelephoneNumber(ApplicantDataContactInfo contactInfo)
+        private Telephone GetAvailableTelephoneNumber(ApplicantContactInfo contactInfo)
         {
             var telephone = new Telephone();
             if (!string.IsNullOrWhiteSpace(contactInfo.Phone))
