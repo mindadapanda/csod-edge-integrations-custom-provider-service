@@ -5,7 +5,6 @@ using csod_edge_integrations_custom_provider_service.Models;
 using Microsoft.EntityFrameworkCore;
 using LiteDB;
 using csod_edge_integrations_custom_provider_service.Data;
-using Microsoft.Extensions.Logging;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {
@@ -17,12 +16,11 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
     {
         protected UserRepository UserRepository;
         protected SettingsRepository SettingsRepository;
-        private ILogger _logger;
-        public UserController(UserRepository userRepository, SettingsRepository settingsRepository, ILogger<UserController> logger)
+
+        public UserController(UserRepository userRepository, SettingsRepository settingsRepository)
         {
             UserRepository = userRepository;
             SettingsRepository = settingsRepository;
-            _logger = logger;
         }
 
         public IActionResult Index()
@@ -130,27 +128,19 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         [HttpPost]
         public IActionResult Login([FromBody]UserLoginRequest loginRequest)
         {
-            try
+            if (string.IsNullOrWhiteSpace(loginRequest.Username)
+                || string.IsNullOrWhiteSpace(loginRequest.Password))
             {
-                if (string.IsNullOrWhiteSpace(loginRequest.Username)
-                    || string.IsNullOrWhiteSpace(loginRequest.Password))
-                {
-                    return BadRequest();
-                }
-                var user = UserRepository.GetUserByUsername(loginRequest.Username);
-                if (user != null)
-                {
-                    if (UserTool.DoPasswordsMatch(loginRequest.Password, user.Password))
-                    {
-                        return Ok(user);
-                    }
-                    return BadRequest();
-                }
+                return BadRequest();
             }
-            catch (Exception ex)
+            var user = UserRepository.GetUserByUsername(loginRequest.Username);
+            if (user != null)
             {
-                _logger.LogError(new EventId(0), ex, "Error Logging In.");
-                return BadRequest(ex);
+                if (UserTool.DoPasswordsMatch(loginRequest.Password, user.Password))
+                {
+                    return Ok(user);
+                }
+                return BadRequest();
             }
             return BadRequest();
         }
