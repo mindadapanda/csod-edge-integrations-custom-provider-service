@@ -45,7 +45,11 @@ namespace csod_edge_integrations_custom_provider_service.Data
             var data = Repository.SingleOrDefault<BackgroundCheckDebugData>(x => x.CallbackGuid == callbackGuid);
             if(data != null)
             {
-                data.BackgroundReportsFromFadvRawXml.ToList().Add(reports);
+                if(data.BackgroundReportsFromFadvRawXml == null)
+                {
+                    data.BackgroundReportsFromFadvRawXml = new List<string>();
+                }
+                data.BackgroundReportsFromFadvRawXml.Add(reports);
                 Repository.Update<BackgroundCheckDebugData>(data);
             }
         }

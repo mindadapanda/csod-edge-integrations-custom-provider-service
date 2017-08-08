@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using csod_edge_integrations_custom_provider_service.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {
+    [Authorize(ActiveAuthenticationSchemes = "Basic")]
     [Produces("application/json")]
     public class DebugController : Controller
     {

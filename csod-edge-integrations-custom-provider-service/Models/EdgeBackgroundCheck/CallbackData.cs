@@ -44,39 +44,44 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
         /// <param name="CallbackUrl">url used to make callbacks into edge for updates to background checks.</param>
         /// <param name="ApplicantRefId">this is the reference id that needs to be provided on callbacks to help identify applicants (required).</param>
         /// <param name="ApplicantRefUserId">this is the userid reference that needs to be provided on callbacks (required).</param>
-        /// <param name="ApplicantRefOrderId">this is the orderid reference that needs to be provided on callbacks (required).</param>
-        public CallbackData(string CallbackUrl = null, string ApplicantRefId = null, string ApplicantRefUserId = null, string ApplicantRefOrderId = null)
-        {
-            // to ensure "ApplicantRefId" is required (not null)
-            if (ApplicantRefId == null)
-            {
-                throw new InvalidDataException("ApplicantRefId is a required property for CallbackData and cannot be null");
-            }
-            else
-            {
-                this.ApplicantRefId = ApplicantRefId;
-            }
-            // to ensure "ApplicantRefUserId" is required (not null)
-            if (ApplicantRefUserId == null)
-            {
-                throw new InvalidDataException("ApplicantRefUserId is a required property for CallbackData and cannot be null");
-            }
-            else
-            {
-                this.ApplicantRefUserId = ApplicantRefUserId;
-            }
-            // to ensure "ApplicantRefOrderId" is required (not null)
-            if (ApplicantRefOrderId == null)
-            {
-                throw new InvalidDataException("ApplicantRefOrderId is a required property for CallbackData and cannot be null");
-            }
-            else
-            {
-                this.ApplicantRefOrderId = ApplicantRefOrderId;
-            }
-            this.CallbackUrl = CallbackUrl;
+        /// <param name="ApplicantRefOrderId">this is the orderid reference that needs to be provided on callbacks (required).</param>\
+        /// 
 
-        }
+        //no need for the constructor
+        //fyi: litedb doesn't like constructors for some reason
+
+        //public CallbackData(string CallbackUrl = null, string ApplicantRefId = null, string ApplicantRefUserId = null, string ApplicantRefOrderId = null)
+        //{
+        //    // to ensure "ApplicantRefId" is required (not null)
+        //    if (ApplicantRefId == null)
+        //    {
+        //        throw new InvalidDataException("ApplicantRefId is a required property for CallbackData and cannot be null");
+        //    }
+        //    else
+        //    {
+        //        this.ApplicantRefId = ApplicantRefId;
+        //    }
+        //    // to ensure "ApplicantRefUserId" is required (not null)
+        //    if (ApplicantRefUserId == null)
+        //    {
+        //        throw new InvalidDataException("ApplicantRefUserId is a required property for CallbackData and cannot be null");
+        //    }
+        //    else
+        //    {
+        //        this.ApplicantRefUserId = ApplicantRefUserId;
+        //    }
+        //    // to ensure "ApplicantRefOrderId" is required (not null)
+        //    if (ApplicantRefOrderId == null)
+        //    {
+        //        throw new InvalidDataException("ApplicantRefOrderId is a required property for CallbackData and cannot be null");
+        //    }
+        //    else
+        //    {
+        //        this.ApplicantRefOrderId = ApplicantRefOrderId;
+        //    }
+        //    this.CallbackUrl = CallbackUrl;
+
+        //}
 
         /// <summary>
         /// url used to make callbacks into edge for updates to background checks

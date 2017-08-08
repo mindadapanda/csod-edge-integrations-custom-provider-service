@@ -19,5 +19,7 @@ namespace csod_edge_integrations_custom_provider_service.Models
         public string AccountsUrl { get; set; }
         public string AdminUrl { get; set; }
         public string CPLinkUrl { get; set; }
+        //the csod edge api key in the header that is required for callbacks to csod
+        public string CsodEdgeApiKey { get; set; }
     }
 }

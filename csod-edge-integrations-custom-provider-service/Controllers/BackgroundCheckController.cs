@@ -66,6 +66,25 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             return Ok(response);
         }
 
+        [Route("api/getreporturl")]
+        [HttpPost]
+        public IActionResult GetReportUrl([FromBody]GetReportUrlRequest request)
+        {
+            if(string.IsNullOrWhiteSpace(request.ProviderReferenceId) 
+                || string.IsNullOrWhiteSpace(request.RecruiterEmail))
+            {
+                return BadRequest();
+            }
+            var currentUser = this.User.Identity as ClaimsIdentity;
+            var userId = int.Parse(currentUser.Claims.First(x => x.Type.Equals("id", StringComparison.CurrentCultureIgnoreCase)).Value);
+            var settings = SettingsRepository.GetSettingsUsingUserId(userId);
+
+            var manager = new FadvManager(settings);
+            var reportUrl = manager.GetReportUrl(request.ProviderReferenceId, request.RecruiterEmail, request.OrderingAccount);
+
+            return Ok(reportUrl);
+        }
+
         private Callback GenerateCallback(CallbackData callbackDataFromCsod, int userId, string edgeCallbackUrl, int callbackLimit = 10)
         {
             var request = HttpContext.Request;

@@ -464,7 +464,10 @@ namespace csod_edge_integrations_custom_provider_service
                 //webRequest.Headers["Authorization"] = $"Basic {Convert.ToBase64String(credentialBuffer)}";
 
                 //add headers for edge callback manager to understand which corp is making the request
-                webRequest.Headers["x-csod-edge-api-key"] = "yhOQEP3H4VE00lYd9OYWvCliaiI=";
+                if(Settings != null && !string.IsNullOrWhiteSpace(Settings.CsodEdgeApiKey))
+                {
+                    webRequest.Headers["x-csod-edge-api-key"] = Settings.CsodEdgeApiKey;
+                }
             }
             return webRequest;
         }
