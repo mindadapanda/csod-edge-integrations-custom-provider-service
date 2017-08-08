@@ -9,7 +9,7 @@ namespace csod_edge_integrations_custom_provider_service.Data
 {
     public class SettingsRepository
     {
-        protected LiteRepository Repository { get; set; }
+        protected LiteRepository Repository;
 
         public SettingsRepository(LiteRepository repository)
         {
@@ -28,9 +28,9 @@ namespace csod_edge_integrations_custom_provider_service.Data
             return settings;
         }
 
-        public Settings GetSettingsUsingHashCode(int hashCode)
+        public Settings GetSettingsUsingUserId(int userId)
         {
-            var settings = Repository.SingleOrDefault<Settings>(x => x.UserHashCode == hashCode);
+            var settings = Repository.SingleOrDefault<Settings>(x => x.InternalUserId == userId);
             return settings;
         }
 

@@ -36,21 +36,21 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
     /// 
     /// </summary>
     [DataContract]
-    public partial class ApplicantDataContactInfo :  IEquatable<ApplicantDataContactInfo>
+    public partial class ApplicantContactInfo : IEquatable<ApplicantContactInfo>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicantDataContactInfo" /> class.
+        /// Initializes a new instance of the <see cref="ApplicantContactInfo" /> class.
         /// </summary>
         /// <param name="Email">Email (required).</param>
         /// <param name="Phone">phone number.</param>
         /// <param name="HomePhone">phone number.</param>
         /// <param name="Mobile">phone number.</param>
-        public ApplicantDataContactInfo(string Email = null, string Phone = null, string HomePhone = null, string Mobile = null)
+        public ApplicantContactInfo(string Email = null, string Phone = null, string HomePhone = null, string Mobile = null)
         {
             // to ensure "Email" is required (not null)
             if (Email == null)
             {
-                throw new InvalidDataException("Email is a required property for ApplicantDataContactInfo and cannot be null");
+                throw new InvalidDataException("Email is a required property for ApplicantContactInfo and cannot be null");
             }
             else
             {
@@ -59,34 +59,34 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             this.Phone = Phone;
             this.HomePhone = HomePhone;
             this.Mobile = Mobile;
-            
+
         }
 
         /// <summary>
         /// Gets or Sets Email
         /// </summary>
-        [DataMember(Name="email")]
+        [DataMember(Name = "email")]
         public string Email { get; set; }
 
         /// <summary>
         /// phone number
         /// </summary>
         /// <value>phone number</value>
-        [DataMember(Name="phone")]
+        [DataMember(Name = "phone")]
         public string Phone { get; set; }
 
         /// <summary>
         /// phone number
         /// </summary>
         /// <value>phone number</value>
-        [DataMember(Name="homePhone")]
+        [DataMember(Name = "homePhone")]
         public string HomePhone { get; set; }
 
         /// <summary>
         /// phone number
         /// </summary>
         /// <value>phone number</value>
-        [DataMember(Name="mobile")]
+        [DataMember(Name = "mobile")]
         public string Mobile { get; set; }
 
 
@@ -97,7 +97,7 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class ApplicantDataContactInfo {\n");
+            sb.Append("class ApplicantContactInfo {\n");
             sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  Phone: ").Append(Phone).Append("\n");
             sb.Append("  HomePhone: ").Append(HomePhone).Append("\n");
@@ -125,36 +125,36 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ApplicantDataContactInfo)obj);
+            return Equals((ApplicantContactInfo)obj);
         }
 
         /// <summary>
-        /// Returns true if ApplicantDataContactInfo instances are equal
+        /// Returns true if ApplicantContactInfo instances are equal
         /// </summary>
-        /// <param name="other">Instance of ApplicantDataContactInfo to be compared</param>
+        /// <param name="other">Instance of ApplicantContactInfo to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(ApplicantDataContactInfo other)
+        public bool Equals(ApplicantContactInfo other)
         {
 
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     this.Email == other.Email ||
                     this.Email != null &&
                     this.Email.Equals(other.Email)
-                ) && 
+                ) &&
                 (
                     this.Phone == other.Phone ||
                     this.Phone != null &&
                     this.Phone.Equals(other.Phone)
-                ) && 
+                ) &&
                 (
                     this.HomePhone == other.HomePhone ||
                     this.HomePhone != null &&
                     this.HomePhone.Equals(other.HomePhone)
-                ) && 
+                ) &&
                 (
                     this.Mobile == other.Mobile ||
                     this.Mobile != null &&
@@ -187,12 +187,12 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
 
         #region Operators
 
-        public static bool operator ==(ApplicantDataContactInfo left, ApplicantDataContactInfo right)
+        public static bool operator ==(ApplicantContactInfo left, ApplicantContactInfo right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(ApplicantDataContactInfo left, ApplicantDataContactInfo right)
+        public static bool operator !=(ApplicantContactInfo left, ApplicantContactInfo right)
         {
             return !Equals(left, right);
         }

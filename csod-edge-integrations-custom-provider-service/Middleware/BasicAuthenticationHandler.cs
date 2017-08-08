@@ -1,6 +1,7 @@
 ﻿using csod_edge_integrations_custom_provider_service.Data;
 using csod_edge_integrations_custom_provider_service.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,12 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
                         identity.AddClaim(new Claim("id", user.Id.ToString()));
 
                         var principle = new ClaimsPrincipal(identity);
+                        //var principle = new GenericPrincipal(new BasicAuthenticationIdentity(user.Username, user.HashCode), null);
+                        //var claims = new List<Claim>();
+                        //claims.Add(new Claim("username", user.Username));
+                        //claims.Add(new Claim("id", user.Id.ToString()));
+                        //var userIdentity = new ClaimsIdentity(claims, "Basic");
+                        //var principle = new ClaimsPrincipal(userIdentity);
                         var ticket = new AuthenticationTicket(principle, new AuthenticationProperties(), Options.AuthenticationScheme);
                         return Task.FromResult(AuthenticateResult.Success(ticket));
                     }

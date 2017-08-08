@@ -40,11 +40,13 @@ namespace csod_edge_integrations_custom_provider_service
             services.AddMemoryCache();
             services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             //do this because relative  path is not working
-            services.AddSingleton(x => new LiteRepository($"C:\\{Configuration.GetConnectionString("LiteDbDev")}"));
+            services.AddSingleton(x => new LiteRepository($"{ApplicationEnvironment.ApplicationBasePath}\\{Configuration.GetConnectionString("LiteDbDev")}"));
+            //for aws, so we don't over write every time we redploy
+            //services.AddSingleton(x => new LiteRepository("C:\\storage\\NoSqlDatabase.db"));
             services.AddSingleton<UserRepository>();
             services.AddSingleton<SettingsRepository>();
             services.AddSingleton<CallbackRepository>();
-            services.AddSingleton<CallbackGenerator>();
+            services.AddSingleton<BackgroundCheckDebugRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

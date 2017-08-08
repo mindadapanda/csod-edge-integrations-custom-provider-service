@@ -15,7 +15,7 @@
                             <div class="ui small right floated button" v-on:click="changePassword($event)" id="change-password-button">Change Password</div>\
                         </div>\
                     </div>\
-                    <h4 class="ui dividing header">User Settings</h4>\
+                    <h4 class="ui dividing header">User Settings for First Advantage Background Check</h4>\
                     <div class="field" v-for="(value, key) in Settings">\
                         <label v-if="keyIsNotId(key)">{{ key }}</label>\
                         <input v-if="keyIsNotId(key)" type="text" v-bind:placeholder="key" v-model="Settings[key]" />\
@@ -38,7 +38,7 @@
     methods: {
         changePassword: function (event) {
             if (this.showPasswordInput) {
-                if (this.User.password == '') {
+                if (this.User.password === '') {
                     return;
                 }
                 //if password input is already shown and this button is triggered again we should go and update the password
@@ -134,7 +134,7 @@
         //    });
         //},
         keyIsNotId: function (key) {
-            if (key === "id" || key === "Id" || key === "ID" || key === "userId" || key === "userHashCode") {
+            if (key === "id" || key === "Id" || key === "ID" || key === "userHashCode" || key === "internalUserId") {
                 return false;
             }
             return true;
