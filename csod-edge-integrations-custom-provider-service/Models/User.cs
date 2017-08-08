@@ -14,6 +14,7 @@ namespace csod_edge_integrations_custom_provider_service.Models
 
         public override int GetHashCode()
         {
+            /*
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
@@ -26,6 +27,9 @@ namespace csod_edge_integrations_custom_provider_service.Models
                     hash = hash * 59 + this.Password.GetHashCode();
                 return hash;
             }
+            */
+
+            return Id;
         }
     }
 }
