@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using csod_edge_integrations_custom_provider_service.Data;
 using csod_edge_integrations_custom_provider_service.Models;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {
@@ -17,11 +18,13 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         protected CallbackRepository CallbackRepository;
         protected SettingsRepository SettingsRepository;
         protected BackgroundCheckDebugRepository DebugRepository;
-        public CallbackController(CallbackRepository callbackRepository, SettingsRepository settingsRepository, BackgroundCheckDebugRepository debugRepository)
+        protected ILogger Logger;
+        public CallbackController(CallbackRepository callbackRepository, SettingsRepository settingsRepository, BackgroundCheckDebugRepository debugRepository, ILogger<CallbackController> logger)
         {
             CallbackRepository = callbackRepository;
             SettingsRepository = settingsRepository;
             DebugRepository = debugRepository;
+            Logger = logger;
         }
 
         [Route("api/callback/{id}")]
@@ -67,7 +70,13 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 {
                     DebugRepository.AddResponseFromFadv(id, body);
                 }
-                
+
+                var callbackMapper = new CallbackMapper();
+                var mappedUrl = callbackMapper.RemapCallback(callbackData.CallbackDataFromCsod.CallbackUrl);
+                Logger.LogInformation($"Callback Url was mapped from: {callbackData.CallbackDataFromCsod.CallbackUrl} to {mappedUrl}", null);
+
+                callbackData.CallbackDataFromCsod.CallbackUrl = mappedUrl;
+
                 manager.ProcessCallback(body, callbackData.CallbackDataFromCsod);
 
                 //don't modify we're going to decrement the limit by 1
