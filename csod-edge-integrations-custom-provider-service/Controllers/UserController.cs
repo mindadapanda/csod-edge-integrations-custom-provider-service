@@ -11,7 +11,6 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
 {
     //used by the UI to manage users
     //to secure this controller Filters is strongly suggested
-    //like [Authorize]
     [Produces("application/json")]
     public class UserController : Controller
     {
@@ -168,7 +167,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             //let's go fetch the settings as well
             if(user != null)
             {
-                var settings = SettingsRepository.GetSettingsUsingHashCode(user.HashCode);
+                var settings = SettingsRepository.GetSettingsUsingUserId(user.Id);
                 if(settings == null)
                 {
                     settings = new Settings();
@@ -222,16 +221,16 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             {
                 return BadRequest();
             }
-            var settings = SettingsRepository.GetSettingsUsingHashCode(user.HashCode);
+            var settings = SettingsRepository.GetSettingsUsingUserId(user.Id);
             if(settings == null)
             {
-                request.Settings.UserHashCode = user.HashCode;
+                request.Settings.InternalUserId = user.Id;
                 SettingsRepository.CreateSettings(request.Settings);
 
                 return Ok();
             }
             if(settings.Id != request.Settings.Id
-                || settings.UserHashCode != user.HashCode)
+                || settings.InternalUserId != user.Id)
             {
                 return BadRequest();
             }

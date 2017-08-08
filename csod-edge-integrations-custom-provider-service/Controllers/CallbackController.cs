@@ -48,6 +48,8 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             return BadRequest("Cannot find callback data to process.");
         }
 
+        //use this in your other controller to help you get a callback url to provide to the vendor
+        //this is just an example
         private string GenerateCallback(string edgeCallbackUrl, int callbackLimit = 10)
         {
             var request = HttpContext.Request;

@@ -9,8 +9,8 @@ namespace csod_edge_integrations_custom_provider_service.Models
     {
         //Id is autogen if using the provided LiteDb as a database
         public int Id { get; set; }
-        //Using the user class generated Hash Code to match a setting to a user
-        public int UserHashCode { get; set; }
+        //linking to userId property on user
+        public int InternalUserId { get; set; }
         public string VendorUrl { get; set; }
         public string VendorUserIdForUser { get; set; }
     }
