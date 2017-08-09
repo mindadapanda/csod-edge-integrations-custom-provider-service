@@ -34,7 +34,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             InitiateAssessmentResponse response = null;
 
             var userId = User.GetUserId();
-            var settings = _settingsRepository.GetSettingsUsingHashCode(userId);
+            var settings = _settingsRepository.GetSettingsUsingUserId(userId);
 
             _logger.LogInformation("Initiate assessment called for user {0}", userId);
 

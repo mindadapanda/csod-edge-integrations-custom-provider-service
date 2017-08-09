@@ -29,7 +29,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         {
             _logger.LogInformation("Get assessment request.");
             var userId = User.GetUserId();
-            var settings = _settingsRepository.GetSettingsUsingHashCode(userId);
+            var settings = _settingsRepository.GetSettingsUsingUserId(userId);
 
             List<AssessmentItem> assessments = null;
 
