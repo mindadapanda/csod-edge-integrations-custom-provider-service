@@ -10,8 +10,10 @@ using AonHewitt.Lib;
 using System.IO;
 using AonHewitt.Lib.Models;
 using csod_edge_integrations_custom_provider_service.Models.Assessment;
-using RestSharp;
 using Microsoft.Extensions.Logging;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {
@@ -29,7 +31,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
 
         [Route("api/callback/{id}")]
         [HttpPost]
-        public IActionResult CallbackEndpoint(Guid id)
+        public async Task<IActionResult> CallbackEndpoint(Guid id)
         {
             _logger.LogInformation("Callback recieved");
 
@@ -76,23 +78,32 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
 
                     _logger.LogInformation("Sending callback results to {0} remapped to {1}", callbackFromRepo.EdgeCallbackUrl, callbackUri);
 
-                    var client = new RestClient(callbackUri);                    
-                    var request = new RestRequest(Method.POST);
+                    var resultJson = JsonConvert.SerializeObject(result);
 
-                    request.AddHeader("x-csod-edge-api-key", "PW9totT67fiz87tNMoR2yoncF/M=");
-                    request.AddJsonBody(result);
-
-                    client.ExecuteAsync(request, x =>
+                    using (var httpClientHandler = new HttpClientHandler())
                     {
-                        if (x.StatusCode == System.Net.HttpStatusCode.OK)
+                        httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                        using (var client = new HttpClient(httpClientHandler))
                         {
-                            _logger.LogInformation("Successfully sent callback results back to edge!");
+                            client.BaseAddress = callbackUri;
+                            client.DefaultRequestHeaders.Add("x-csod-edge-api-key", "PW9totT67fiz87tNMoR2yoncF/M=");
+
+                            HttpRequestMessage request = new HttpRequestMessage();
+                            request.Method = HttpMethod.Post;
+                            request.Content = new StringContent(resultJson, Encoding.UTF8, "application/json");
+
+                            var response = await client.SendAsync(request);
+                            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                            {
+                                _logger.LogInformation("Successfully sent callback results back to edge!");
+                            }
+                            else
+                            {
+                                _logger.LogInformation("Error sending callback results back to edge. {0} : {1}", callbackUri, resultJson);
+                                _logger.LogInformation("Error {0} : {1}", response.StatusCode, await response.Content.ReadAsStringAsync());
+                            }
                         }
-                        else
-                        {
-                            _logger.LogInformation("Error sending callback results back to edge.");
-                        }
-                    });
+                    }
                 }
                
                 //finally return status 200 to let requestor know we received the request
