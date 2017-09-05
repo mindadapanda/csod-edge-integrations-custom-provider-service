@@ -52,7 +52,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 if(settings == null){
                     return BadRequest();
                 }
-                var manager = new FadvManager(settings);
+                var manager = new FadvManager(settings, DebugRepository, Logger);
                 //this can only be used once. Once you read the body content you can no longer rewind and re-read the content
                 //if you need to keep this body content to be consumed elsewhere, you would need to create a middleware to read and write to the request body
                 string body;
@@ -88,6 +88,8 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             //returns 400, to tell them that the callback supplied GUID is not in our system
             return BadRequest("Cannot find callback data to process.");
         }
+
+        
 
     }
 }

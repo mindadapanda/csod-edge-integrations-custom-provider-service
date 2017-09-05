@@ -51,32 +51,32 @@ namespace csod_edge_integrations_custom_provider_service.Models.EdgeBackgroundCh
         public BackgroundCheckReport(CallbackData CallbackData = null, string ProviderReferenceId = null, string TypeOfBackgroundCheck = null, string OrderStatus = null, string CompletionDate = null, string ScreeningResult = null, string ReportUrl = null)
         {
             // to ensure "CallbackData" is required (not null)
-            if (CallbackData == null)
-            {
-                throw new InvalidDataException("CallbackData is a required property for BackgroundCheckReport and cannot be null");
-            }
-            else
-            {
+            //if (CallbackData == null)
+            //{
+            //    throw new InvalidDataException("CallbackData is a required property for BackgroundCheckReport and cannot be null");
+            //}
+            //else
+            //{
                 this.CallbackData = CallbackData;
-            }
+            //}
             // to ensure "ProviderReferenceId" is required (not null)
-            if (ProviderReferenceId == null)
-            {
-                throw new InvalidDataException("ProviderReferenceId is a required property for BackgroundCheckReport and cannot be null");
-            }
-            else
-            {
+            //if (ProviderReferenceId == null)
+            //{
+            //    throw new InvalidDataException("ProviderReferenceId is a required property for BackgroundCheckReport and cannot be null");
+            //}
+            //else
+            //{
                 this.ProviderReferenceId = ProviderReferenceId;
-            }
+            //}
             // to ensure "OrderStatus" is required (not null)
-            if (OrderStatus == null)
-            {
-                throw new InvalidDataException("OrderStatus is a required property for BackgroundCheckReport and cannot be null");
-            }
-            else
-            {
+            //if (OrderStatus == null)
+            //{
+            //    throw new InvalidDataException("OrderStatus is a required property for BackgroundCheckReport and cannot be null");
+            //}
+            //else
+            //{
                 this.OrderStatus = OrderStatus;
-            }
+            //}
             this.TypeOfBackgroundCheck = TypeOfBackgroundCheck;
             this.CompletionDate = CompletionDate;
             this.ScreeningResult = ScreeningResult;

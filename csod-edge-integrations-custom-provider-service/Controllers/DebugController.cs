@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using csod_edge_integrations_custom_provider_service.Data;
 using Microsoft.AspNetCore.Authorization;
+using csod_edge_integrations_custom_provider_service.Models.Fadv;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {

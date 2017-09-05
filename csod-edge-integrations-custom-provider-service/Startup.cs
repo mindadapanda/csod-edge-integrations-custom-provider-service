@@ -67,10 +67,10 @@ namespace csod_edge_integrations_custom_provider_service
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.Run(conext =>
-            {
-                return conext.Response.WriteAsync("Hello from ASP.NET Core!");
-            });
+            //app.Run(conext =>
+            //{
+            //    return conext.Response.WriteAsync("Hello from ASP.NET Core!");
+            //});
         }
     }
 }
