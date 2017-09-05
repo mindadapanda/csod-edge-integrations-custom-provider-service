@@ -12,11 +12,11 @@ Select the repo that most fits your needs. As of 9/5/2017 we have the following 
 
 **assessment-base** - this is the base branch for custom type of assessments, it includes all of master branch's stuff plus the assessment custom type contracts. Use this repo if you're building against a Vendor of type assessments as this will get you up and running quicker
 
-**assessment-aon** - this is the aon branch for custom type assessment. This branch helps you understand what a custom connector would look like and how it would work; in this case we have a working example of aon against custom type assessments.
+**assessment-aon** - this is the aon branch for custom type assessment. This branch helps you understand what a custom connector would look like and how it would work; in this case we have a working example of aon against custom type assessments
 
 **bgcheck-base** - this is the base branch for custom type of background check, it includes all of mater branch's stuff plus the custom background check contracts. Use this repo if you're building against a Vendor of type background check as this will get you up and running quicker
 
-**bgcheck-fdav** - this is the fadv branch for custom type background check. This branch helps you understrand what a custom connector would look like and how it would work; in this case we have a working example of fadv against custom type background check.
+**bgcheck-fdav** - this is the fadv branch for custom type background check. This branch helps you understrand what a custom connector would look like and how it would work; in this case we have a working example of fadv against custom type background check
 
 Clone repo, and run. Either command line or you can use IISExpress. You will land on the Manage Users page, or navigate to it http://localhost:31515/user . This should be a good starting point and help you familiarize yourself with a User which has a username and password and the associated Settings that a user has. By default I added VendorUrl and VendorUserIdForUser as just some dummy settings to help you understand what would/should go into Settings.
 
@@ -60,20 +60,18 @@ UI is built using Vuejs 2 and Semantic UI CSS (just the css)
 
   **Callback.cs** - This is the callback model that is defined to help store callbacks. You can add more properties to this data contract and fill it with your needs. The basic properties I have added are: `id - which is an autoincremented id used by litedb to keep track of records`, `PublicId - which is a GUID used to provide to vendors to help provide unique keys for callbaks`, `EdgeCallbackUrl - the url that Edge provided to make callbacks into edge, it make sense to include this as most of the time you have the PublicID and need the EdgeCallbackUrl to update some information`, and `Limit - this is a counter which helps you keep track of callbacks, callbacks exceeding this limit are ignored, of course you can modify this logic in the callback controller should you want/need to`
   
-  **Settings.cs** - This is the settings model that you will use to reflect a group of settings to the vendor. This can be anything from a unique ID that the vendor wants you to use every time you make a request or a URL that the vendor has specificed for you when making requests. The UI figures out the model of the settings, but currently does not support nested hierarchy, so I reccommend keeping everything flat. 99% of use cases is flat hierachry for settings.
+  **Settings.cs** - This is the settings model that you will use to reflect a group of settings to the vendor. This can be anything from a unique ID that the vendor wants you to use every time you make a request or a URL that the vendor has specificed for you when making requests. The UI figures out the model of the settings, but currently does not support nested hierarchy, so I reccommend keeping everything flat. 99% of use cases is flat hierachry for settings
 
   **UpdateOrAddUserSettingsRequest.cs** - This is the data contrac that helps the webapi endpoint strongly type a update user settings request from the UI.
   
   **UpdateUserPasswordRequest.cs** - This is the data contract that helps the webapi endpoint strongly type a user password change request from the UI.
 
-  **User.cs** - This is the user model. Pretty self explanatory, you can choose to add more properties for your concept of 'user' here.
+  **User.cs** - This is the user model. Pretty self explanatory, you can choose to add more properties for your concept of 'user' here
 
-  **UserLoginRequest.cs** - This is a data contract that helps the webapi endpoint strongly type of login request from the UI.
+  **UserLoginRequest.cs** - This is a data contract that helps the webapi endpoint strongly type of login request from the UI
 
 **Views/**
-
    **User/**
-   
     **Index.cshtml** - This is an entry point for the UI to launch
 
 **Views/_Layout.cshtml** - This is the shared layout used by Index
@@ -88,7 +86,7 @@ UI is built using Vuejs 2 and Semantic UI CSS (just the css)
 
 # Dev Guide
 ## litedb
-is currently used as the datastore for the models. the location of this datastore can be defined in your appsettings.json. For deploying to AWS via Elastic BeanStalk we've noticed that you can only define datastores relative to the C drive, so insetad of relative to the application as definied in appsettings.json, the correct way for AWS would be C:\yourdatastorefile.db or anything along those lines would be fine
+is currently used as the datastore for the models. We chose litedb because it was lightweight and was an embedded nosql solution. For our example boilerplate code we wanted to provide a quick, get started and code solution; so instead of building against Mongo, Couch, and the litany of nosql db, we decided for the express route of embedded. You can always move your database to mongo because the way we build the project, you just have to replace the adapter layer that talks to the DB, hence the repository pattern. The location of this datastore can be defined in your appsettings.json. For deploying to AWS via Elastic BeanStalk we've noticed that you can only define datastores relative to the C drive or absolute to the C drive, so instead of relative to the application as definied in appsettings.json, the correct way for AWS would be C:\yourdatastorefile.db or anything along those lines would be fine
 
 ## Building your service
 This section is dedicated to helping you understand the flow of how an integration works. While each integration type might have different contracts, the logical flow is all the same.
