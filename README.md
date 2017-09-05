@@ -1,49 +1,95 @@
 # csod-edge-integrations-custom-provider-service
-this repo is a starter pack for integrating against custom type integrations in Cornerstone Edge
+This repo is a starter pack for integrating against custom type integrations in Cornerstone Edge. Custom type integrations are integrations which collectively fall under one category. For example, background check, payroll, time and attendance, etc. Instead of integrating against every vendor, it is more pragamtic to define a common theme to integration types and implement at the type level. Therefore background checks will have one well defined integration contract that various background check providers can build against; and the middleware to integrate between the well defined background check contract as defined by Cornerstone Edge and a background check contract as defined by a Vendor is what this repo serves to accomplish, thus the Custom Connector name.
 
-To get started clone this repo and run it on your local dev machine or an instance in the cloud (aws, azure, google app engine, digital ocean, etc). This repo is built using ASPNET Core and therefore will be able to be run in any linux, windows, or mac environment. Please read up on aspnet core and get familiar with it.
+For those who are savvy and know what they're doing you can simply clone this repo 'master' branch and run it on your local dev machine (currently the configuration is set to work on windows environments, but you can configure it to work in mac and/or linux environments) or an instance in the cloud (aws, azure, google app engine, digital ocean, etc). This repo is built using ASPNET Core. Please read up on aspnet core and get familiar with it if you're new to C#/donetcore.
 
-This repo is a baseline for getting started. It includes a rudimentary user page, which allows you to tie a username/password combo (basic auth request) to a class of settings. This repo contains the concept of being an adapter which is essentially what this service serves to accomplish: being the middleware that talks to a vendor and integrates against a custom type integration as defined by Cornerstone Edge.
+This repo is a baseline for getting started. It includes a rudimentary user page, which allows you to associate a username/password combo (basic auth request) to a class of settings (which is unique per client against a vendor/provider). This repo serves to help speed up your development process by doing most of the leg work and setting up the boiler plate code. The goal of this repo is to help you get started quickly. It also serves to help highlight the concept of Cornerstone Edge Custom Connectors, which is essentially the service that you're building; the middleware that talks to a vendor and integrates against a custom type integration as defined by Cornerstone Edge.
 
 # Quick Start
+Select the repo that most fits your needs. As of 9/5/2017 we have the following branches that we recommend:
+
+**master** - the master branch and is super lightweight, no custom type contracts are loaded in here, just a users page
+
+**assessment-base** - this is the base branch for custom type of assessments, it includes all of master branch's stuff plus the assessment custom type contracts. Use this repo if you're building against a Vendor of type assessments as this will get you up and running quicker
+
+**assessment-aon** - this is the aon branch for custom type assessment. This branch helps you understand what a custom connector would look like and how it would work; in this case we have a working example of aon against custom type assessments.
+
+**bgcheck-base** - this is the base branch for custom type of background check, it includes all of mater branch's stuff plus the custom background check contracts. Use this repo if you're building against a Vendor of type background check as this will get you up and running quicker
+
+**bgcheck-fdav** - this is the fadv branch for custom type background check. This branch helps you understrand what a custom connector would look like and how it would work; in this case we have a working example of fadv against custom type background check.
+
 Clone repo, and run. Either command line or you can use IISExpress. You will land on the Manage Users page, or navigate to it http://localhost:31515/user . This should be a good starting point and help you familiarize yourself with a User which has a username and password and the associated Settings that a user has. By default I added VendorUrl and VendorUserIdForUser as just some dummy settings to help you understand what would/should go into Settings.
 
-# Basics
-ASPNET Core MVC + WebAPI + Entity Framework Core + Sqlite
+# Basics covering 'master' branch
+ASPNET Core MVC + WebAPI + LiteDB (this is an embedded nosql datastore, much like sqlite for sql)
 
 UI is built using Vuejs 2 and Semantic UI CSS (just the css)
 
-wwwroot/ - contains all static files, css, js, this is where the frontend code lives
+**wwwroot/** - contains all static files, css, js, this is where the frontend code lives
 
-Controllers/
-  UserController.cs - This is a WebAPI controller which contains all the necessary CRUD operations for a User
+**Controllers/**
+  
+  **CallbackController.cs** - This is a WebAPI controller which contains a stub for callbacks from a vendor to this service. Callbacks seem to be universal fro most vendors so I included this to help you further understand the flow of custom connectors. There is also a private method I created to help you generate a callback; this private method can live anywhere
+  
+  **SettingsController.cs** - This is a WebAPI controller which contains operations for settings. You can choose to use this or not, during development I realized that because settings are so closely associated to a user, it made more sense to lump settings during a user get call from the UI
+  
+  **UserController.cs** - This is a WebAPI controller which contains all the necessary operations for validating user credentials and adding a user
 
-Migrations/ - This folder contains all migrations. I have added an initial migration that matches the User and Settings model. If you update your Settings or User model you would need to run migrations. Look up EFCore and dotnet. Basically you're going to run, `dotnet ef migrations add MyMigrationName`, and then do, `dotnet ef database update`. You can also circumvent the process and manually add your own migration into the migrations folder and build/execute the project and migrations should kick in because of the Database.Migrations() call executed in UserContext.cs
+**Data/**
+  
+  **CallbackRepository.cs** - This is the repository pattern that sits on top of litedb that specifically operates on callbacks with CRUD operations. I currently use dependency injection to spin up an instance of this callback repository
+  
+  **SettingsRepository.cs** - This is the repository patternt that sits on top of litedb that specifically operates on settings with CRUD operations. I currently use dependency injection to spin up an instance of this settings repository
+  
+  **UserRepository.cs** - This is the repository patternt that sits on top of litedb that specifically operates on users with CRUD operations. I currently use dependency injection to spin up an instance of this user repository
 
-Models/
-  Settings.cs - This is the settings model that you will use to reflect a group of settings to the vendor. This can be anything from a unique ID that the vendor wants you to use every time you make a request or a URL that the vendor has specificed for you when making requests. The UI figures out the model of the settings, but currently does not support nested hierarchy, so I reccommend keeping everything flat. 99% of use cases is flat hierachry for settings.
+**Middleware/**
+  
+  **BasicAuthenticationHandler.cs** - This is the basic authentication override where we can take over how authentication is handled during basic auth. You can write your own custom logic, however we have already wired this up to work correctly with users, so this is more of a reference than any code modification.
+  
+  **BasicAuthenticationIdentity.cs** - This is the class we're using to support our custom versino of basic auth identity. As you can see it implements IIdentity. You can choose to expand this or leave it as is. A word of warning, DotNetCore uses ClaimsIdentity, please familiarize yourself with this before attempting any overrides or custom user property storage.
+  
+  **BasicAuthenticationMiddleware** - This is the middleware that intercepts basic auth request and routes it to the handler, BasicAuthenticationHandler
+  
+  **BasicAuthenticationOptions** - This just tells the server what authentication scheme we're looking for. In this case it is "basic"
+  
+  **MiddlewareExtensions** - The extension that fires up and tells IApplicationBuilder to use our BasicAuthenticationMiddleware for basic auth request
 
-  User.cs - This is the user model.
 
-  UserContext.cs - This is the Entity Framework Core DbContext for user. Both users and settings db access are located here.
+**Models/**
 
-Views/
-   User/
-    Index.cshtml - This is an entry point for the UI to launch
+  **Callback.cs** - This is the callback model that is defined to help store callbacks. You can add more properties to this data contract and fill it with your needs. The basic properties I have added are: `id - which is an autoincremented id used by litedb to keep track of records`, `PublicId - which is a GUID used to provide to vendors to help provide unique keys for callbaks`, `EdgeCallbackUrl - the url that Edge provided to make callbacks into edge, it make sense to include this as most of the time you have the PublicID and need the EdgeCallbackUrl to update some information`, and `Limit - this is a counter which helps you keep track of callbacks, callbacks exceeding this limit are ignored, of course you can modify this logic in the callback controller should you want/need to`
+  
+  **Settings.cs** - This is the settings model that you will use to reflect a group of settings to the vendor. This can be anything from a unique ID that the vendor wants you to use every time you make a request or a URL that the vendor has specificed for you when making requests. The UI figures out the model of the settings, but currently does not support nested hierarchy, so I reccommend keeping everything flat. 99% of use cases is flat hierachry for settings.
 
-Views/_Layout.cshtml - This is the shared layout used by Index
+  **UpdateOrAddUserSettingsRequest.cs** - This is the data contrac that helps the webapi endpoint strongly type a update user settings request from the UI.
+  
+  **UpdateUserPasswordRequest.cs** - This is the data contract that helps the webapi endpoint strongly type a user password change request from the UI.
 
-appsettings.json - This is your appconfig file in JSON format
+  **User.cs** - This is the user model. Pretty self explanatory, you can choose to add more properties for your concept of 'user' here.
+
+  **UserLoginRequest.cs** - This is a data contract that helps the webapi endpoint strongly type of login request from the UI.
+
+**Views/**
+
+   **User/**
+   
+    **Index.cshtml** - This is an entry point for the UI to launch
+
+**Views/_Layout.cshtml** - This is the shared layout used by Index
+
+**appsettings.json** - This is your appconfig file in JSON format
  
-  appsettings.Development.json - I would use this for development purposes only. If a Config setting you're trying to access isn't in here, dotnet will try to use the non-Development one. The order is if you're in DEV, Development settings superceed the non-Development one.
+  **appsettings.Development.json** - I would use this for development purposes only. If a Config setting you're trying to access isn't in here, dotnet will try to use the non-Development one. The order is if you're in DEV, Development settings superceed the non-Development one.
 
-Program.cs - entry point to start everything.
+**Program.cs** - entry point to start everything.
 
-Startup.cs - This is where you define what your app is using. This is also where you would do dependency injection as well as global configuration settings such as JSON Formatter Styling
+**Startup.cs** - This is where you define what your app is using. This is also where you would do dependency injection as well as global configuration settings such as JSON Formatter Styling
 
 # Dev Guide
-## Sqlite 
-is currently used as the datastore for the models. For PRODUCTION the sqlite instance of Database.db should be where your application directory is. For DEVELOPMENT purposes it is located in `\bin\Debug\netcoreapp1.1\`. Note that this service currently uses netcoreapp1.1, of course if you use a different version it would be in a different folder.
+## litedb
+is currently used as the datastore for the models. the location of this datastore can be defined in your appsettings.json. For deploying to AWS via Elastic BeanStalk we've noticed that you can only define datastores relative to the C drive, so insetad of relative to the application as definied in appsettings.json, the correct way for AWS would be C:\yourdatastorefile.db or anything along those lines would be fine
+
 ## Building your service
 This section is dedicated to helping you understand the flow of how an integration works. While each integration type might have different contracts, the logical flow is all the same.
 
