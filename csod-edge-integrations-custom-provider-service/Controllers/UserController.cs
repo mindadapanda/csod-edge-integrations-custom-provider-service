@@ -9,9 +9,6 @@ using Microsoft.Extensions.Logging;
 
 namespace csod_edge_integrations_custom_provider_service.Controllers
 {
-    //used by the UI to manage users
-    //to secure this controller Filters is strongly suggested
-    //like [Authorize]
     [Produces("application/json")]
     public class UserController : Controller
     {
@@ -27,16 +24,6 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
 
         public IActionResult Index()
         {
-            //seed db with the default admin user
-            //var user = new User();
-            //user.Username = "edge-user";
-            //user.Password = "csodedgeisawesome";
-
-            //if (!_userContext.Users.Any(x => x.Username == user.Username && x.Password == user.Password))
-            //{
-            //    _userContext.Add(user);
-            //    _userContext.SaveChanges();
-            //}
 
             return View();
         }
@@ -93,32 +80,6 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         }
 
         //[Route("api/user/{id}")]
-        //[HttpPut]
-        //public IActionResult UpdateUser(int id, [FromBody]User updatedUser)
-        //{
-        //    if(string.IsNullOrWhiteSpace(updatedUser.Username) 
-        //        || string.IsNullOrWhiteSpace(updatedUser.Password)
-        //        || id != updatedUser.Id)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    var user = UserRepository.GetUser(id);
-        //    if(user == null)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    //make sure they don't update the username
-        //    if(!user.Username.Equals(updatedUser.Username))
-        //    {
-        //        return BadRequest();
-        //    }
-        //    //make sure to salt and hash the user password
-        //    updatedUser.Password = UserTool.GenerateSaltedHash(updatedUser.Password);
-        //    UserRepository.UpdateUser(updatedUser);
-        //    return new NoContentResult();
-        //}
-
-        //[Route("api/user/{id}")]
         //[HttpDelete]
         //public IActionResult DeleteUser(int id)
         //{
@@ -168,7 +129,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             //let's go fetch the settings as well
             if(user != null)
             {
-                var settings = SettingsRepository.GetSettingsUsingHashCode(user.HashCode);
+                var settings = SettingsRepository.GetSettingsUsingUserId(user.Id);
                 if(settings == null)
                 {
                     settings = new Settings();
@@ -222,16 +183,16 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             {
                 return BadRequest();
             }
-            var settings = SettingsRepository.GetSettingsUsingHashCode(user.HashCode);
+            var settings = SettingsRepository.GetSettingsUsingUserId(user.Id);
             if(settings == null)
             {
-                request.Settings.UserHashCode = user.HashCode;
+                request.Settings.InternalUserId = user.Id;
                 SettingsRepository.CreateSettings(request.Settings);
 
                 return Ok();
             }
             if(settings.Id != request.Settings.Id
-                || settings.UserHashCode != user.HashCode)
+                || settings.InternalUserId != user.Id)
             {
                 return BadRequest();
             }

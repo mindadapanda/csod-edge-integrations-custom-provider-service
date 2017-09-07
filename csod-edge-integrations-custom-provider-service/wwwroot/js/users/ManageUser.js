@@ -134,7 +134,7 @@
         //    });
         //},
         keyIsNotId: function (key) {
-            if (key === "id" || key === "Id" || key === "ID" || key === "userId" || key === "userHashCode") {
+            if (key === "id" || key === "Id" || key === "ID" || key === "userId" || key === "internalUserId") {
                 return false;
             }
             return true;
