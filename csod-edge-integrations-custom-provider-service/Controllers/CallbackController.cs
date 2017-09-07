@@ -16,12 +16,10 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
     {
         protected CallbackRepository CallbackRepository;
         protected SettingsRepository SettingsRepository;
-        protected BackgroundCheckDebugRepository DebugRepository;
-        public CallbackController(CallbackRepository callbackRepository, SettingsRepository settingsRepository, BackgroundCheckDebugRepository debugRepository)
+        public CallbackController(CallbackRepository callbackRepository, SettingsRepository settingsRepository)
         {
             CallbackRepository = callbackRepository;
             SettingsRepository = settingsRepository;
-            DebugRepository = debugRepository;
         }
 
         [Route("api/callback/{id}")]
@@ -49,7 +47,6 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 if(settings == null){
                     return BadRequest();
                 }
-                var manager = new FadvManager(settings);
                 //this can only be used once. Once you read the body content you can no longer rewind and re-read the content
                 //if you need to keep this body content to be consumed elsewhere, you would need to create a middleware to read and write to the request body
                 string body;
@@ -61,14 +58,6 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 {
                     return BadRequest();
                 }
-                //add to debug data
-                var debugData = DebugRepository.GetUsingCallbackGuid(id);
-                if(debugData != null)
-                {
-                    DebugRepository.AddResponseFromFadv(id, body);
-                }
-                
-                manager.ProcessCallback(body, callbackData.CallbackDataFromCsod);
 
                 //don't modify we're going to decrement the limit by 1
                 CallbackRepository.DecrementCallbackLimit(callbackFromRepo.Id);
