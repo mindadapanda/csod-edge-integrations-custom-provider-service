@@ -45,7 +45,7 @@ UI is built using Vuejs 2 and Semantic UI CSS (just the css)
 
 **Middleware/**
   
-  **BasicAuthenticationHandler.cs** - This is the basic authentication override where we can take over how authentication is handled during basic auth. You can write your own custom logic, however we have already wired this up to work correctly with users, so this is more of a reference than any code modification.
+  **BasicAuthenticationHandler.cs** - This is the basic authentication override where we can take over how authentication is handled during basic auth. You can write your own custom logic, however we have already wired this up to work correctly with users, so this is more of a reference than any code modification. Usage is attribute decoration on any controllers like so: **[Authorize(ActiveAuthenticationSchemes = "Basic")]**. Refer to any controllers to get a good idea.
   
   **BasicAuthenticationIdentity.cs** - This is the class we're using to support our custom versino of basic auth identity. As you can see it implements IIdentity. You can choose to expand this or leave it as is. A word of warning, DotNetCore uses ClaimsIdentity, please familiarize yourself with this before attempting any overrides or custom user property storage.
   
@@ -86,7 +86,7 @@ UI is built using Vuejs 2 and Semantic UI CSS (just the css)
 
 # Dev Guide
 ## litedb
-is currently used as the datastore for the models. We chose litedb because it was lightweight and was an embedded nosql solution. For our example boilerplate code we wanted to provide a quick, get started and code solution; so instead of building against Mongo, Couch, and the litany of nosql db, we decided for the express route of embedded. You can always move your database to mongo because the way we build the project, you just have to replace the adapter layer that talks to the DB, hence the repository pattern. The location of this datastore can be defined in your appsettings.json. For deploying to AWS via Elastic BeanStalk we've noticed that you can only define datastores relative to the C drive or absolute to the C drive, so instead of relative to the application as definied in appsettings.json, the correct way for AWS would be C:\yourdatastorefile.db or anything along those lines would be fine
+is currently used as the datastore for the models. We chose litedb because it was lightweight and was an embedded nosql solution. For our example boilerplate code we wanted to provide a quick, get started and code solution; so instead of building against Mongo, Couch, and the litany of nosql db, we decided for the express route of embedded. You can always move your database to mongo because the way we build the project, you just have to replace the adapter layer that talks to the DB. The location of this datastore can be defined in your appsettings.json. For deploying to AWS via Elastic BeanStalk we've noticed that you can only define datastores relative to the C drive or absolute to the C drive, so instead of relative to the application as definied in appsettings.json, the correct way for AWS would be C:\yourdatastorefile.db or anything along those lines would be fine
 
 ## Building your service
 This section is dedicated to helping you understand the flow of how an integration works. While each integration type might have different contracts, the logical flow is all the same.
