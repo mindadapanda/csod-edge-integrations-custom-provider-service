@@ -8,7 +8,11 @@
 
   <ItemGroup>
     <Content Include="wwwroot\css\main.css" />
+    <Content Include="wwwroot\js\JobRequisitions.js" />
     <Content Include="wwwroot\js\Login.js" />
+    <Content Include="wwwroot\js\Router - Copy.js">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="wwwroot\js\Router.js" />
     <Content Include="wwwroot\js\users\ManageUser.js" />
     <Content Include="wwwroot\js\users\ManageUsers.js" />
@@ -64,6 +68,9 @@
     <None Include=".ebextensions\folder.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CsodATSCoreLib\CsodATSCoreLib.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="nlog.config">

@@ -11,7 +11,9 @@ namespace csod_edge_integrations_custom_provider_service.Models
         public int Id { get; set; }
         //linking to userId property on user
         public int InternalUserId { get; set; }
-        public string VendorUrl { get; set; }
-        public string VendorUserIdForUser { get; set; }
+
+        public string EndpointUrl { get; set; }
+        public string ApiKey { get; set; }
+        public string ApiSecret { get; set; }
     }
 }
