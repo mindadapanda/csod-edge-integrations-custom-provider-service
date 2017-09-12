@@ -42,7 +42,7 @@ namespace CsodATSCoreLib
                 headers.Add("x-csod-date", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.000"));
                 headers.Add("x-csod-api-key", _apiKey);
 
-                Uri absoluteUrl = new Uri(string.Format("{0}{1}", _client.BaseUrl, request.Resource));
+                Uri absoluteUrl = new Uri(string.Format("{0}/{1}", _client.BaseUrl.ToString().TrimEnd('/'), request.Resource.TrimStart('/')));
 
                 string signature = _sigProvider.SignRequest(_apiSecret, request.Method.ToString(), headers, absoluteUrl.AbsolutePath);
 
@@ -91,7 +91,7 @@ namespace CsodATSCoreLib
                 headers.Add("x-csod-date", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.000"));
                 headers.Add("x-csod-session-token", SessionToken);
 
-                Uri absoluteUrl = new Uri(string.Format("{0}{1}", _client.BaseUrl, request.Resource));
+                Uri absoluteUrl = new Uri(string.Format("{0}/{1}", _client.BaseUrl.ToString().TrimEnd('/'), request.Resource.TrimStart('/')));
 
                 string signature = _sigProvider.SignRequest(SessionTokenSecret, request.Method.ToString(), headers, absoluteUrl.AbsolutePath);
                 headers.Add("x-csod-signature", signature);

@@ -10,10 +10,8 @@
     <Content Include="wwwroot\css\main.css" />
     <Content Include="wwwroot\js\JobRequisitions.js" />
     <Content Include="wwwroot\js\Login.js" />
-    <Content Include="wwwroot\js\Router - Copy.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="wwwroot\js\Router.js" />
+    <Content Include="wwwroot\js\users\JobRequisitions.js" />
     <Content Include="wwwroot\js\users\ManageUser.js" />
     <Content Include="wwwroot\js\users\ManageUsers.js" />
     <Content Include="wwwroot\lib\semantic\semantic.css" />
@@ -43,6 +41,7 @@
 
   <ItemGroup>
     <Folder Include="Views\User\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LiteDB" Version="3.1.1" />
@@ -65,7 +64,7 @@
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".ebextensions\folder.config">
+    <None Include=".ebextensions\hackathon.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

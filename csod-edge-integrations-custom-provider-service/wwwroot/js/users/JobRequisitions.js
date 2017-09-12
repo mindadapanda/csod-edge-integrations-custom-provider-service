@@ -4,7 +4,17 @@
                 <div class="ui header">Manage User: {{ User.username }}</div>\
                 <div class="ui form">\
                     <div class="field" v-for="item in JobRequisitions">\
-                        <label>{{ item.id }},{{ item.title }},{{ item.description }},{{ item.ref }}</label>\
+                        <label>{{ item.id }}</label>\
+                        <label>{{ item.title }}</label>\
+                        <label>{{ item.description }}</label>\
+                        <label>{{ item.ref }}</label>\
+                    </div>\
+                </div>\
+                <div class="ui form">\
+                    <div class="field" v-for="item in JobBoards">\
+                        <label>{{ item.title }}</label>\
+                        <img v-bind:src="item.iconUrl" height="28" width="100">\
+                        <input type="checkbox" v-model="item.selected" />\
                     </div>\
                 </div>\
             </div>\
@@ -13,6 +23,7 @@
         return {
             User: {},
             JobRequisitions: {},
+            JobBoards: {},
             showPasswordInput: false,
             UserData: JSON.parse(sessionStorage.getItem('userCredentials'))
         }
@@ -47,6 +58,7 @@
                 success: function (data) {
                     self.User = data.user;
                     self.JobRequisitions = data.jobrequisitions;
+                    self.JobBoards = data.jobboards;
                 },
                 error: function (data) {
                     router.push({

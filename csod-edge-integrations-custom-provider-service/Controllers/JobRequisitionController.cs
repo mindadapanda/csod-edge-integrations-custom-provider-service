@@ -11,11 +11,12 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
     {
         protected UserRepository _userRepository;
         protected SettingsRepository _settingsRepository;
-
-        public JobRequisitionController(UserRepository userRepository, SettingsRepository settingsRepository)
+        protected JobBoardsRepository _jobboardsRepository;
+        public JobRequisitionController(UserRepository userRepository, SettingsRepository settingsRepository, JobBoardsRepository jobboardsRepository)
         {
             _userRepository = userRepository;
             _settingsRepository = settingsRepository;
+            _jobboardsRepository = jobboardsRepository;
         }
 
         [Route("api/jobrequisitions")]
@@ -37,10 +38,12 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                     CsodATSClient client = new CsodATSClient(settings.EndpointUrl, "ca", settings.ApiKey, settings.ApiSecret);
 
                     var jobrequisitions = client.GetJobRequisitions(10, 1, JobRequisitionStatus.Open);
+                    var jobboards = _jobboardsRepository.GetAll();
                     return Ok(new
                     {
                         user = user,
-                        jobrequisitions = jobrequisitions
+                        jobrequisitions = jobrequisitions,
+                        jobboards = jobboards
                     });
                 }
             }
