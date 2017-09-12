@@ -40,6 +40,7 @@ namespace csod_edge_integrations_custom_provider_service
             services.AddMemoryCache();
             services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             //do this because relative  path is not working
+            //services.AddSingleton(x => new LiteRepository($"{ApplicationEnvironment.ApplicationBasePath}\\NoSqlDbHackathon.db"));
             services.AddSingleton(x => new LiteRepository($"C:\\{Configuration.GetConnectionString("LiteDbDev")}"));
             services.AddSingleton<UserRepository>();
             services.AddSingleton<SettingsRepository>();

@@ -1,35 +1,44 @@
 ﻿body {
     margin-top: 20px;
+    background: #f1f3f5;
 }
 
-#manage-users-header{
-    display:inline-block;
+#manage-users-header {
+    display: inline-block;
 }
 
-#create-user-button{
+#create-user-button {
     display: inline-block
 }
 
-#users-container{
+#users-container {
     margin-top: 20px;
 }
 
-#login-container{
+#login-container {
     max-width: 500px;
     margin: 0 auto;
     top: 200px;
     padding: 50px 50px;
 }
 
-#manage-user-container{
+#manage-user-container {
     margin-top: 80px;
 }
 
-#change-password-button{
-   margin-top: 10px;
+#change-password-button {
+    margin-top: 10px;
 }
 
-#failed-login-label{
+#failed-login-label {
     margin-top: 20px;
     text-align: center;
 }
+
+#jobrequisition-container {
+    padding-bottom: 50px;
+}
+
+    #jobrequisition-container > .ui.very.relaxed.list > .item {
+        border-bottom: 3px solid #868e96
+    }

@@ -45,12 +45,12 @@ namespace csod_edge_integrations_custom_provider_service.Data
                 Selected = false
             });
 
-            jobboards.Add(new JobBoard()
-            {
-                Title = "Juju",
-                IconUrl = "/images/juju.png",
-                Selected = false
-            });
+            //jobboards.Add(new JobBoard()
+            //{
+            //    Title = "Juju",
+            //    IconUrl = "/images/juju.png",
+            //    Selected = false
+            //});
 
             jobboards.Add(new JobBoard()
             {

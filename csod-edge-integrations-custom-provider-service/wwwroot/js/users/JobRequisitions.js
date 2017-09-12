@@ -1,23 +1,39 @@
 ﻿var JobRequisitions = Vue.extend({
     template: '<div class="ui container" id="jobrequisition-container">\
-            <div class="ui raised blue segment">\
-                <div class="ui header">Manage User: {{ User.username }}</div>\
-                <div class="ui form">\
-                    <div class="field" v-for="item in JobRequisitions">\
-                        <label>{{ item.id }}</label>\
-                        <label>{{ item.title }}</label>\
-                        <label>{{ item.description }}</label>\
-                        <label>{{ item.ref }}</label>\
-                    </div>\
-                </div>\
-                <div class="ui form">\
-                    <div class="field" v-for="item in JobBoards">\
-                        <label>{{ item.title }}</label>\
-                        <img v-bind:src="item.iconUrl" height="28" width="100">\
-                        <input type="checkbox" v-model="item.selected" />\
-                    </div>\
-                </div>\
-            </div>\
+            <div class="ui active inverted dimmer" v-show="loading"> \
+                <div class="ui text loader">Loading</div> \
+            </div> \
+            <h2 class="ui dividing header">Welcome, {{ User.username }}</h2> \
+            <h3 class="ui header">Job Requisitions</h3> \
+            <div class="ui very relaxed list"> \
+                <div class="item" v-for="req in JobRequisitions"> \
+                    <div class="ui right floated content"> \
+                        <div class="ui green icon button"> \
+                            <i class="edit icon"></i> Post \
+                        </div> \
+                    </div> \
+                    <div class="content"> \
+                        <a class="large header">{{ req.title}} &nbsp;&nbsp;<a class="ui mini blue label">{{ req.ref }}</a></a> \
+                        <div class="description"> {{ req.description }}</div> \
+                    </div> \
+                    <br /> \
+                    <h4 class="ui dividing header">Select Job Boards: </h4> \
+                    <br /> \
+                    <div class="ui horizontal divided list"> \
+                        <div class="item" v-for="jb in JobBoards"> \
+                            <img class="ui image" v-bind:src="jb.iconUrl" width="70"> \
+                            <div class="content"> \
+                                <div class="inline field"> \
+                                    <div class="ui toggle checkbox"> \
+                                        <input type="checkbox" tabindex="0" class="hidden"> \
+                                        <label></label> \
+                                    </div> \
+                                </div> \
+                            </div> \
+                        </div> \
+                    </div> \
+                </div> \
+            </div> \
             </div>',
     data: function () {
         return {
@@ -25,17 +41,23 @@
             JobRequisitions: {},
             JobBoards: {},
             showPasswordInput: false,
-            UserData: JSON.parse(sessionStorage.getItem('userCredentials'))
+            UserData: JSON.parse(sessionStorage.getItem('userCredentials')),
+            loading: false
         }
     },
     created: function () {
         this.fetchData();
     },
+    ready: function () {
+        $('.ui.checkbox').checkbox();
+    },
     methods: {
         fetchData: function () {
+            this.loading = true;
             if (!this.UserData
                 || !this.UserData.username
                 || !this.UserData.password) {
+                this.loading = false;
                 router.push({
                     name: 'login'
                 });
@@ -53,17 +75,20 @@
                         router.push({
                             name: 'login'
                         });
+                        self.loading = false;
                     }
                 },
                 success: function (data) {
                     self.User = data.user;
                     self.JobRequisitions = data.jobrequisitions;
                     self.JobBoards = data.jobboards;
+                    self.loading = false;
                 },
                 error: function (data) {
                     router.push({
                         name: 'login'
                     });
+                    self.loading = false;
                 }
             });
         }
