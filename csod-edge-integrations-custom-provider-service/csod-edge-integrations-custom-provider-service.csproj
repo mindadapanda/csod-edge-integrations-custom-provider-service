@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Content Include="wwwroot\css\main.css" />
-    <Content Include="wwwroot\js\JobRequisitions.js" />
     <Content Include="wwwroot\js\Login.js" />
     <Content Include="wwwroot\js\Router.js" />
     <Content Include="wwwroot\js\users\JobRequisitions.js" />
