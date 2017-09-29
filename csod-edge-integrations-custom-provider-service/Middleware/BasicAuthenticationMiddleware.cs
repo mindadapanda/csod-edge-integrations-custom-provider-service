@@ -15,21 +15,24 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
 {
     public class BasicAuthenticationMiddleware : AuthenticationMiddleware<BasicAuthenticationOptions>
     {
-        readonly UserRepository _userRepository;
+        private readonly UserRepository _userRepository;
+        private readonly CustomCrypto _crypto;
         public BasicAuthenticationMiddleware(
            RequestDelegate next,
            IOptions<BasicAuthenticationOptions> options,
            ILoggerFactory loggerFactory,
            UrlEncoder encoder,
-           UserRepository userRepository)
+           UserRepository userRepository,
+           CustomCrypto crypto)
            : base(next, options, loggerFactory, encoder)
         {
             _userRepository = userRepository;
+            _crypto = crypto;
         }
 
         protected override AuthenticationHandler<BasicAuthenticationOptions> CreateHandler()
         {
-            return new BasicAuthenticationHandler(_userRepository);
+            return new BasicAuthenticationHandler(_userRepository, _crypto);
         }
     }
 }

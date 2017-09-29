@@ -22,7 +22,6 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
         public IActionResult Index()
         {
             return RedirectToAction("Index", "user");
-            //return View();
         }
         
 

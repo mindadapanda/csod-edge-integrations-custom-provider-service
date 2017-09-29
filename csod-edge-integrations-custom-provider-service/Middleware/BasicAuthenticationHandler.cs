@@ -15,10 +15,12 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
 
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
     {
-        UserRepository _userRepository;
-        public BasicAuthenticationHandler(UserRepository userRepository)
+        private readonly UserRepository _userRepository;
+        private readonly CustomCrypto _crypto;
+        public BasicAuthenticationHandler(UserRepository userRepository, CustomCrypto crypto)
         {
             _userRepository = userRepository;
+            _crypto = crypto;
         }
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {            
@@ -39,7 +41,7 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
                 var user = _userRepository.GetUserByUsername(username);
                 if (user != null)
                 {
-                    if (UserTool.DoPasswordsMatch(password, user.Password))
+                    if (_crypto.DoPasswordsMatch(password, user.Password))
                     {
                         var identity = new ClaimsIdentity("Basic");
                         identity.AddClaim(new Claim("id", user.Id.ToString()));

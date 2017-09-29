@@ -100,39 +100,6 @@
                 }
             });
         },
-        //updateUser: function () {
-        //    var self = this;
-        //    $.ajax({
-        //        contentType: "application/json",
-        //        type: "PUT",
-        //        dataType: "json",
-        //        data: JSON.stringify(
-        //            self.User
-        //        ),
-        //        url: "./api/user/"+self.User.id,
-        //        success: function (data) {
-        //            location.reload();
-        //        },
-        //        error: function (data) {
-        //            location.reload();
-        //        }
-        //    });
-        //},
-        //removeUser: function () {
-        //    var self = this;
-        //    $.ajax({
-        //        contentType: "application/json",
-        //        type: "DELETE",
-        //        dataType: "json",
-        //        url: "./api/user/"+self.User.id,
-        //        success: function (data) {
-        //            self.backToManageUsers();
-        //        },
-        //        error: function (data) {
-        //            self.backToManageUsers();
-        //        }
-        //    });
-        //},
         keyIsNotId: function (key) {
             if (key === "id" || key === "Id" || key === "ID" || key === "userId" || key === "internalUserId") {
                 return false;
