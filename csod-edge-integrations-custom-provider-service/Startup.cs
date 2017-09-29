@@ -36,15 +36,13 @@ namespace csod_edge_integrations_custom_provider_service
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // Add framework services.
-            //services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase());
             services.AddMemoryCache();
             services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-            //do this because relative  path is not working
-            services.AddSingleton(x => new LiteRepository($"C:\\{Configuration.GetConnectionString("LiteDbDev")}"));
+            services.AddSingleton(x => new LiteRepository(Configuration.GetConnectionString("LiteDbDev")));            
             services.AddSingleton<UserRepository>();
             services.AddSingleton<SettingsRepository>();
             services.AddSingleton<CallbackRepository>();
-            services.AddSingleton<CallbackGenerator>();
+            services.AddSingleton(x => new CustomCrypto(Configuration.GetSection("Crypto")["Salt"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,10 +63,7 @@ namespace csod_edge_integrations_custom_provider_service
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.Run(conext =>
-            {
-                return conext.Response.WriteAsync("Hello from ASP.NET Core!");
-            });
+            app.Run(conext => conext.Response.WriteAsync("Hello from ASP.NET Core!"));
         }
     }
 }
