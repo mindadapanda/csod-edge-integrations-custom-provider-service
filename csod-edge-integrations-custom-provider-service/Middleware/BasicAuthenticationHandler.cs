@@ -16,10 +16,12 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
 
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
     {
-        UserRepository _userRepository;
-        public BasicAuthenticationHandler(UserRepository userRepository)
+        private readonly UserRepository _userRepository;
+        private readonly CustomCrypto _crypto;
+        public BasicAuthenticationHandler(UserRepository userRepository, CustomCrypto crypto)
         {
             _userRepository = userRepository;
+            _crypto = crypto;
         }
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {            
@@ -40,18 +42,12 @@ namespace csod_edge_integrations_custom_provider_service.Middleware
                 var user = _userRepository.GetUserByUsername(username);
                 if (user != null)
                 {
-                    if (UserTool.DoPasswordsMatch(password, user.Password))
+                    if (_crypto.DoPasswordsMatch(password, user.Password))
                     {
                         var identity = new ClaimsIdentity("Basic");
                         identity.AddClaim(new Claim("id", user.Id.ToString()));
 
                         var principle = new ClaimsPrincipal(identity);
-                        //var principle = new GenericPrincipal(new BasicAuthenticationIdentity(user.Username, user.HashCode), null);
-                        //var claims = new List<Claim>();
-                        //claims.Add(new Claim("username", user.Username));
-                        //claims.Add(new Claim("id", user.Id.ToString()));
-                        //var userIdentity = new ClaimsIdentity(claims, "Basic");
-                        //var principle = new ClaimsPrincipal(userIdentity);
                         var ticket = new AuthenticationTicket(principle, new AuthenticationProperties(), Options.AuthenticationScheme);
                         return Task.FromResult(AuthenticateResult.Success(ticket));
                     }
