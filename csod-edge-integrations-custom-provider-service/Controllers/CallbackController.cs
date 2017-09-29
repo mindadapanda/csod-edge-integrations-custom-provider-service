@@ -69,13 +69,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 if(debugData != null)
                 {
                     DebugRepository.AddResponseFromFadv(id, body);
-                }
-
-                var callbackMapper = new CallbackMapper();
-                var mappedUrl = callbackMapper.RemapCallback(callbackData.CallbackDataFromCsod.CallbackUrl);
-                Logger.LogInformation($"Callback Url was mapped from: {callbackData.CallbackDataFromCsod.CallbackUrl} to {mappedUrl}", null);
-
-                callbackData.CallbackDataFromCsod.CallbackUrl = mappedUrl;
+                }                
 
                 manager.ProcessCallback(body, callbackData.CallbackDataFromCsod);
 
