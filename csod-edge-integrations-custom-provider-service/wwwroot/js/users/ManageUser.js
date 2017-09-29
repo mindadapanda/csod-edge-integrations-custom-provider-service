@@ -15,7 +15,7 @@
                             <div class="ui small right floated button" v-on:click="changePassword($event)" id="change-password-button">Change Password</div>\
                         </div>\
                     </div>\
-                    <h4 class="ui dividing header">User Settings for First Advantage Background Check</h4>\
+                    <h4 class="ui dividing header">User Settings</h4>\
                     <div class="field" v-for="(value, key) in Settings">\
                         <label v-if="keyIsNotId(key)">{{ key }}</label>\
                         <input v-if="keyIsNotId(key)" type="text" v-bind:placeholder="key" v-model="Settings[key]" />\
@@ -38,7 +38,7 @@
     methods: {
         changePassword: function (event) {
             if (this.showPasswordInput) {
-                if (this.User.password === '') {
+                if (this.User.password == '') {
                     return;
                 }
                 //if password input is already shown and this button is triggered again we should go and update the password
@@ -100,41 +100,8 @@
                 }
             });
         },
-        //updateUser: function () {
-        //    var self = this;
-        //    $.ajax({
-        //        contentType: "application/json",
-        //        type: "PUT",
-        //        dataType: "json",
-        //        data: JSON.stringify(
-        //            self.User
-        //        ),
-        //        url: "./api/user/"+self.User.id,
-        //        success: function (data) {
-        //            location.reload();
-        //        },
-        //        error: function (data) {
-        //            location.reload();
-        //        }
-        //    });
-        //},
-        //removeUser: function () {
-        //    var self = this;
-        //    $.ajax({
-        //        contentType: "application/json",
-        //        type: "DELETE",
-        //        dataType: "json",
-        //        url: "./api/user/"+self.User.id,
-        //        success: function (data) {
-        //            self.backToManageUsers();
-        //        },
-        //        error: function (data) {
-        //            self.backToManageUsers();
-        //        }
-        //    });
-        //},
         keyIsNotId: function (key) {
-            if (key === "id" || key === "Id" || key === "ID" || key === "userHashCode" || key === "internalUserId") {
+            if (key === "id" || key === "Id" || key === "ID" || key === "userId" || key === "internalUserId") {
                 return false;
             }
             return true;

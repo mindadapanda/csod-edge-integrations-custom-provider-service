@@ -14,16 +14,21 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
     {
         protected UserRepository UserRepository;
         protected SettingsRepository SettingsRepository;
-        private ILogger _logger;
-        public UserController(UserRepository userRepository, SettingsRepository settingsRepository, ILogger<UserController> logger)
+        private readonly ILogger _logger;
+        private readonly CustomCrypto _crypto;
+
+        public UserController(UserRepository userRepository, SettingsRepository settingsRepository,
+            ILogger<UserController> logger, CustomCrypto crypto)
         {
             UserRepository = userRepository;
             SettingsRepository = settingsRepository;
             _logger = logger;
+            _crypto = crypto;
         }
 
         public IActionResult Index()
         {
+
             return View();
         }
 
@@ -45,7 +50,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                     return BadRequest();
                 }
                 //make sure to salt and hash the user password
-                user.Password = UserTool.GenerateSaltedHash(user.Password);
+                user.Password = _crypto.GenerateSaltedHash(user.Password);
 
                 UserRepository.CreateUser(user);
             }
@@ -56,14 +61,6 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
 
             return new NoContentResult();
         }
-
-        //[Route("api/user/{id}")]
-        //[HttpDelete]
-        //public IActionResult DeleteUser(int id)
-        //{
-        //    UserRepository.DeleteUser(id);
-        //    return new NoContentResult();
-        //}
 
         [Route("api/user/login")]
         [HttpPost]
@@ -79,7 +76,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 var user = UserRepository.GetUserByUsername(loginRequest.Username);
                 if (user != null)
                 {
-                    if (UserTool.DoPasswordsMatch(loginRequest.Password, user.Password))
+                    if (_crypto.DoPasswordsMatch(loginRequest.Password, user.Password))
                     {
                         return Ok(user);
                     }
@@ -138,7 +135,7 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
                 return BadRequest();
             }
             //make sure to salt and hash the user password
-            user.Password = UserTool.GenerateSaltedHash(request.UpdatedPassword);
+            user.Password = _crypto.GenerateSaltedHash(request.UpdatedPassword);
             if (UserRepository.UpdateUser(user))
             {
                 return Ok();
