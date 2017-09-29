@@ -47,36 +47,5 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             //returns 400, to tell them that the callback supplied GUID is not in our system
             return BadRequest("Cannot find callback data to process.");
         }
-
-        //use this in your other controller to help you get a callback url to provide to the vendor
-        //this is just an example
-        private string GenerateCallback(string edgeCallbackUrl, int callbackLimit = 10)
-        {
-            var request = HttpContext.Request;
-            if (request == null)
-            {
-                throw new Exception("request context cannot be null");
-            }
-            if (string.IsNullOrWhiteSpace(edgeCallbackUrl))
-            {
-                throw new Exception("edge callback url cannot be empty string");
-            }
-            if (callbackLimit > 100 || callbackLimit <= 0)
-            {
-                callbackLimit = 100;
-            }
-            var publicId = Guid.NewGuid();
-            var callback = new Callback()
-            {
-                PublicId = publicId,
-                EdgeCallbackUrl = edgeCallbackUrl,
-                Limit = callbackLimit
-            };
-            CallbackRepository.CreateCallback(callback);
-
-            var callbackUrl = $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}/api/callback/{publicId}";
-            return callbackUrl;
-        }
-
     }
 }
