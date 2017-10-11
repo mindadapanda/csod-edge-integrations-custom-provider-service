@@ -1,6 +1,6 @@
 ﻿body {
     margin-top: 20px;
-    background: #f1f3f5;
+    background: #dee2e6;
 }
 
 #manage-users-header {
@@ -42,3 +42,10 @@
     #jobrequisition-container > .ui.very.relaxed.list > .item {
         border-bottom: 3px solid #868e96
     }
+
+#nelson-face {
+    display: block;
+    float: right;
+    vertical-align: middle;
+    margin-top: -50px;
+}

@@ -3,8 +3,10 @@
             <div class="ui active inverted dimmer" v-show="loading"> \
                 <div class="ui text loader">Loading</div> \
             </div> \
-            <img src="/images/nelson.png" height="150"> \
-            <h1>Nelson\'s Job Poster 3000!</h1> \
+                <h1> Nelson\'s Job Poster 3000!</h1> \
+                <div class="ui container" id="nelson-face-container"> \
+                    <img src="/images/nelson.png" height="80" id="nelson-face"> \
+                </div> \
             <h2 class="ui dividing header">Welcome, {{ User.username }}</h2> \
             <h3 class="ui header">Job Requisitions</h3> \
             <div class="ui very relaxed list"> \
@@ -48,17 +50,25 @@
         }
     },
     created: function () {
-        var userData = JSON.stringify({
-            username: 'utah',
-            password: 'bOf5qjpY9RSF5BKr21BindrtrN28QtNpgzFVbmjx8B4='
+        var userdata = JSON.stringify({
+            Username: 'utah',
+            Password: 'bof5qjpy9rsf5bkr21bindrtrn28qtnpgzfvbmjx8b4='
         });
-        sessionStorage.setItem('userCredentials', userData);
-        this.UserData = JSON.parse(userData);
+        sessionStorage.setItem('usercredentials', userdata);
+        this.userdata = JSON.parse(userdata);
 
         this.fetchData();
     },
-    ready: function () {
-        $('.ui.checkbox').checkbox();
+    watch: {
+        loading: function (val) {
+            // done loading
+            if (!val) {
+                setTimeout(function () {
+                    $('.ui.checkbox').checkbox();
+                }, 1500)
+                
+            }
+        }
     },
     methods: {
         fetchData: function () {
