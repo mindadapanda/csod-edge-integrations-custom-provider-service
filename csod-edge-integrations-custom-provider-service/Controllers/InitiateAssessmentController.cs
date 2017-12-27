@@ -31,6 +31,8 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
 
         public IActionResult Post([FromBody]InitiateAssessment order)
         {
+            _logger.LogInformation("Initiate assessment request body {0}", Newtonsoft.Json.JsonConvert.SerializeObject(order));
+
             InitiateAssessmentResponse response = null;
 
             var userId = User.GetUserId();
@@ -48,14 +50,14 @@ namespace csod_edge_integrations_custom_provider_service.Controllers
             string message = "Unknown Error";
             if (settings != null)
             {
-                var callbackId = _callbackGenerator.GenerateCallback(order.CallbackUrl);
+                var callbackId = _callbackGenerator.GenerateCallback(order.CallbackData.CallbackUrl);
                 var callbackUrl = $"{Request.Scheme}://{Request.Host.ToUriComponent()}{Request.PathBase.ToUriComponent()}/api/callback/{callbackId}";
 
                 _logger.LogInformation("Callback URL generated: {0}", callbackUrl);
 
                 var aonHewittClient = new AonHewittClient();
 
-                var body = aonHewittClient.CreateRegisterCandidateRequestBody(aonHewittSettings.VendorCode, aonHewittSettings.ClientId, order.AssessmentId, order.TrackingId, callbackUrl);
+                var body = aonHewittClient.CreateRegisterCandidateRequestBody(aonHewittSettings.VendorCode, aonHewittSettings.ClientId, order.AssessmentId, order.CallbackData.TrackingId, callbackUrl);
                 var result = aonHewittClient.SubmitReqest(aonHewittSettings.ServiceBaseUrl, RequestMethod.POST, body);
 
                 _logger.LogInformation("Request submitted to Aon with results {0}", result);
